@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="storm-api.jar" destdir="doc" doctitle="stORM API" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.turbomanage.storm.types,com.turbomanage.storm.api,com.turbomanage.storm.exception,com.turbomanage.storm.query,com.turbomanage.storm,com.turbomanage.storm.csv" source="1.6" sourcepath="src" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
