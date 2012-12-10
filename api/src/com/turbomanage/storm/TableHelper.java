@@ -26,7 +26,8 @@ import com.turbomanage.storm.csv.CsvTableWriter;
 import com.turbomanage.storm.query.FilterBuilder;
 
 /**
- * This class contains methods related to database creation and upgrades which
+ * Abstract base class for generated TableHelpers.
+ * Contains methods related to database creation and upgrades which
  * are executed before the database is fully ready for use by the DAOs. Its
  * methods are invoked by {@link DatabaseHelper#onCreate(SQLiteDatabase)}. To
  * customize the SQL for a particular table, create your own {@link TableHelper}
@@ -139,7 +140,7 @@ public abstract class TableHelper<T extends Persistable> {
 	public abstract FilterBuilder<T> buildFilter(FilterBuilder<T> builder, T exampleObj);
 
 	/**
-	 * Create the table that represents the associated entity.
+	 * Creates the table that represents the associated entity.
 	 *
 	 * @param db
 	 */
@@ -148,7 +149,7 @@ public abstract class TableHelper<T extends Persistable> {
 	}
 
 	/**
-	 * Drop the table that represents the associated entity.
+	 * Drops the table that represents the associated entity.
 	 *
 	 * @param db
 	 */
@@ -157,7 +158,7 @@ public abstract class TableHelper<T extends Persistable> {
 	}
 
 	/**
-	 * Upgrade the table that represents the associated entity. This will
+	 * Upgrades the table that represents the associated entity. This will
 	 * typically be an ALTER TABLE statement.
 	 *
 	 * @param db
@@ -170,7 +171,7 @@ public abstract class TableHelper<T extends Persistable> {
 	}
 
 	/**
-	 * Backup the current table and restore into the new schema.
+	 * Backs up the current table and restores into the new schema.
 	 *
 	 * @param dbHelper
 	 */
@@ -181,7 +182,7 @@ public abstract class TableHelper<T extends Persistable> {
 	}
 
 	/**
-	 * Back up the current table to a text file.
+	 * Backs up the current table to a CSV file.
 	 *
 	 * @param dbHelper
 	 */
@@ -190,7 +191,7 @@ public abstract class TableHelper<T extends Persistable> {
 	}
 
 	/**
-	 * Restore table from a text file.
+	 * Restores a table from a text file.
 	 *
 	 * @param dbHelper
 	 */
@@ -199,7 +200,7 @@ public abstract class TableHelper<T extends Persistable> {
 	}
 
 	/**
-	 * Drop table and recreate it.
+	 * Drops a table and recreates it.
 	 *
 	 * @param dbHelper
 	 */

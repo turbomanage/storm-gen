@@ -21,11 +21,6 @@ import com.turbomanage.storm.api.Converter;
 import com.turbomanage.storm.types.TypeConverter.BindType;
 import com.turbomanage.storm.types.TypeConverter.SqlType;
 
-/**
- * User-supplied TypeConverter.
- *
- * @author David M. Chandler
- */
 @Converter(forTypes = { Date.class }, bindType = BindType.LONG, sqlType = SqlType.INTEGER)
 public class DateConverter extends TypeConverter<Date, Long> {
 

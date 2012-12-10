@@ -23,6 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * CSV utility methods. Does not implement the full CSV spec.
+ * Values containing quotes or commas are enclosed in quotes
+ * and quotes are escaped as double quotes.
+ *
+ * @author David M. Chandler
+ */
 public class CsvUtils {
 
 	public static final char DELIMITER = ',';
@@ -61,6 +68,12 @@ public class CsvUtils {
 		return out.toString();
 	}
 
+	/**
+	 * Removes enclosing quotes and unescapes double quotes
+	 *
+	 * @param str An escaped CSV value
+	 * @return the original value
+	 */
 	public static String unescapeCsv(String str) {
 		if (str == null)
 			return null;
@@ -81,7 +94,7 @@ public class CsvUtils {
 	}
 
 	/**
-	 * Return values from a CSV String.
+	 * Returns values from a CSV String.
 	 *
 	 * @param csvRow
 	 * @return
@@ -104,6 +117,13 @@ public class CsvUtils {
 		}
 	}
 
+	/**
+	 * Obtains the next value from a {@link StringReader}.
+	 *
+	 * @param in
+	 * @return An escaped value
+	 * @throws IOException
+	 */
 	public static String nextValue(StringReader in) throws IOException {
 		StringWriter w = new StringWriter();
 		boolean inQuotedValue = false;
@@ -147,7 +167,7 @@ public class CsvUtils {
 	}
 
 	/**
-	 * Parse a CSV row containing name=value pairs.
+	 * Parses a CSV row containing name=value pairs.
 	 *
 	 * @param csvPairs
 	 * @return Map<name,value>
@@ -163,7 +183,7 @@ public class CsvUtils {
 	}
 
 	/**
-	 * Return a String containing a comma-separated list
+	 * Returns a String containing a comma-separated list
 	 * of name=value pairs from a map.
 	 *
 	 * @param map
