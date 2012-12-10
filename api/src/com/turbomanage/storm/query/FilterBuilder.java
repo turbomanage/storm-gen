@@ -31,12 +31,25 @@ import com.turbomanage.storm.types.IntegerConverter;
 import com.turbomanage.storm.types.LongConverter;
 import com.turbomanage.storm.types.ShortConverter;
 
+/**
+ * Builds a SQL query constructed by ANDing together all conditions.
+ *
+ * @author David M. Chandler
+ *
+ * @param <T>
+ */
 public class FilterBuilder<T extends Persistable> {
 
 	private static final String TAG = FilterBuilder.class.getName();
 	private SQLiteDao<T> dao;
 	private List<Predicate> where = new ArrayList<Predicate>();
 
+	/**
+	 * Constructor requires the {@link SQLiteDao} that will be
+	 * used to execute the completed query.
+	 *
+	 * @param dao
+	 */
 	public FilterBuilder(SQLiteDao<T> dao) {
 		this.dao = dao;
 	}
@@ -102,7 +115,8 @@ public class FilterBuilder<T extends Persistable> {
 	}
 
 	/**
-	 * Execute the query using the attached DAO
+	 * Executes the query using the attached DAO.
+	 * Calling method MUST close the Cursor!
 	 *
 	 * @return Cursor result
 	 */
@@ -110,10 +124,23 @@ public class FilterBuilder<T extends Persistable> {
 		return dao.query(where(), params());
 	}
 
+	/**
+	 * Executes the query and returns the result as an
+	 * object.
+	 *
+	 * @see SQLiteDao#asObject(Cursor)
+	 * @return The matching entity or null
+	 */
 	public T get() {
 		return dao.asObject(this.exec());
 	}
 
+	/**
+	 * Executes the query and returns the result as a {@link List}.
+	 *
+	 * @see SQLiteDao#asList(Cursor)
+	 * @return A List of matching entities or null
+	 */
 	public List<T> list() {
 		return dao.asList(this.exec());
 	}

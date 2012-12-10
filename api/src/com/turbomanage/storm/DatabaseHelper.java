@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2012 Google, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,18 +27,39 @@ import com.turbomanage.storm.api.DatabaseFactory;
  * Default implementation of the SQLiteOpenHelper. Projects should extend this
  * class and annotate it with {@link Database}. Subclasses may override the
  * default onCreate and onUpgrade methods.
- * 
+ *
  * @author David M. Chandler
  */
 public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
 	public enum UpgradeStrategy {
-		DROP_CREATE, BACKUP_RESTORE, UPGRADE
+		/**
+		 * Drop and recreate all tables without preserving existing data.
+		 */
+		DROP_CREATE,
+		/**
+		 * Drop and recreate all tables with attempt to preserve existing data
+		 * by first backing up to CSV and restoring from the same.
+		 */
+		BACKUP_RESTORE,
+		/**
+		 * Custom upgrade strategy implemented by overriding
+		 * {@link DatabaseHelper#getUpgradeStrategy()}.
+		 */
+		UPGRADE
 	}
 
 	private DatabaseFactory dbFactory;
+
 	protected Context mContext;
 
+	/**
+	 * The constructor that should be overridden. Simply invoke
+	 * the super constructor.
+	 *
+	 * @param ctx
+	 * @param dbFactory
+	 */
 	public DatabaseHelper(Context ctx, DatabaseFactory dbFactory) {
 		this(ctx, dbFactory.getName(), null, dbFactory.getVersion());
 		this.mContext = ctx;
@@ -47,7 +68,7 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Don't extend this one. You need dbFactory from the other constructor.
-	 * 
+	 *
 	 * @param ctx
 	 * @param dbName
 	 * @param cursorFactory
@@ -58,21 +79,40 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 		super(ctx, dbName, null, dbVersion);
 	}
 
-	protected abstract UpgradeStrategy getUpgradeStrategy();
+	/**
+	 * Subclasses must implement to select what to do
+	 * when you upgrade the app's database version. To implement
+	 * your own upgrade strategy, return {@link UpgradeStrategy.UPGRADE}
+	 * and override the upgrade() method in this class.
+	 *
+	 * @return UpgradeStrategy
+	 */
+	public abstract UpgradeStrategy getUpgradeStrategy();
 
+	/**
+	 * Provides a reference to the {@link Context} which was used
+	 * to initialize this {@link SQLiteOpenHelper}.
+	 *
+	 * @return Context
+	 */
 	public Context getContext() {
 		return this.mContext;
 	}
 
 	/**
 	 * Hook to replace any of the generated TableHelpers with your own.
-	 * 
+	 *
 	 * @return
 	 */
 	protected TableHelper[] getTableHelpers() {
 		return getDbFactory().getTableHelpers();
 	}
 
+	/**
+	 * Calls {@link TableHelper#onCreate(SQLiteDatabase)} for each TableHelper.
+	 *
+	 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
+	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		for (TableHelper th : getTableHelpers()) {
@@ -80,6 +120,11 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/**
+	 * Calls a method on each TableHelper depending on the {@link UpgradeStrategy}.
+	 *
+	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		switch (getUpgradeStrategy()) {
@@ -95,18 +140,34 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/**
+	 * Calls {@link TableHelper#onUpgrade(SQLiteDatabase, int, int)} for
+	 * each TableHelper. Override this method to implement your own
+	 * upgrade strategy.
+	 *
+	 * @param db
+	 * @param oldVersion
+	 * @param newVersion
+	 */
 	public void upgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		for (TableHelper th : getTableHelpers()) {
 			th.onUpgrade(db, oldVersion, newVersion);
 		}
 	}
 
+	/**
+	 * Backs up all tables to CSV, drops and recreates them, then restores
+	 * them from CSV.
+	 */
 	public void backupAndRestore() {
 		for (TableHelper th : getTableHelpers()) {
 			th.backupAndRestore(this);
 		}
 	}
 
+	/**
+	 * Drops and recreates all tables.
+	 */
 	public void dropAndCreate() {
 		for (TableHelper th : getTableHelpers()) {
 			th.dropAndCreate(this);
@@ -131,6 +192,12 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/**
+	 * Returns the {@link DatabaseFactory} from which this instance
+	 * was obtained.
+	 *
+	 * @return DatabaseFactory
+	 */
 	public DatabaseFactory getDbFactory() {
 		return dbFactory;
 	}

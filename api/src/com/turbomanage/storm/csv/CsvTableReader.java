@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2012 Google, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,12 @@ import android.database.sqlite.SQLiteDatabase;
 import com.turbomanage.storm.DatabaseHelper;
 import com.turbomanage.storm.TableHelper;
 
-
+/**
+ * Contains methods used to restore a table from a CSV file. Each
+ * instance is associated with one table.
+ *
+ * @author David M. Chandler
+ */
 public class CsvTableReader {
 
 	@SuppressWarnings("rawtypes")
@@ -40,11 +45,16 @@ public class CsvTableReader {
 	private String[] defaultValues;
 	private InsertHelper insertHelper;
 
+	/**
+	 * Constructor requires a corresponding {@link TableHelper} class.
+	 *
+	 * @param tableHelper
+	 */
 	@SuppressWarnings("rawtypes")
 	public CsvTableReader(TableHelper tableHelper) {
 		this.th = tableHelper;
 	}
-	
+
 	protected String getCsvFilename(DatabaseHelper dbHelper) {
 		String dbName = dbHelper.getDbFactory().getName();
 		String tableName = th.getTableName();
@@ -52,6 +62,13 @@ public class CsvTableReader {
 		return String.format("%s.v%d.%s", dbName, version, tableName);
 	}
 
+	/**
+	 * Attempts to import a database table from a CSV
+	 * file in the default location.
+	 *
+	 * @param dbHelper
+	 * @return count of rows imported or -1 if error
+	 */
 	public int importFromCsv(DatabaseHelper dbHelper) {
 		String filename = getCsvFilename(dbHelper);
 		FileInputStream fileInputStream;
@@ -63,7 +80,17 @@ public class CsvTableReader {
 			return -1;
 		}
 	}
-	
+
+	/**
+	 * Attempts to import a database table from an {@link InputStream}
+	 * formatted as a CSV file. Does all inserts in a single transaction
+	 * for efficiency and so that all inserts will succeed or fail
+	 * together.
+	 *
+	 * @param dbHelper
+	 * @param is
+	 * @return count of rows imported or -1 if error
+	 */
 	public int importFromCsv(DatabaseHelper dbHelper, InputStream is) {
 		int numInserts = 0;
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -99,7 +126,7 @@ public class CsvTableReader {
 	/**
 	 * Populate an array containing the value for each column
 	 * from a CSV row where the columns may be in different order.
-	 * 
+	 *
 	 * @param textValues One row from the CSV file
 	 * @return
 	 */
@@ -116,9 +143,9 @@ public class CsvTableReader {
 
 	/**
 	 * Map each column in the CSV to a column in the table.
-	 * Assumes that {@link TableHelper#getColumns()} are the same 
+	 * Assumes that {@link TableHelper#getColumns()} are the same
 	 * order as {@link InsertHelper#getColumnIndex(String)}.
-	 * 
+	 *
 	 * @param headerRow
 	 * @return An array containing the CSV col # for each table column
 	 *         or -1 for missing columns
@@ -140,7 +167,7 @@ public class CsvTableReader {
 	 * Parse the values in a CSV row, map them to the table column
 	 * order, and insert. Uses {@link InsertHelper} so it may be
 	 * called repeatedly within a transaction for max performance.
-	 * 
+	 *
 	 * @param csvRow
 	 * @return row ID of the newly inserted row or -1
 	 */

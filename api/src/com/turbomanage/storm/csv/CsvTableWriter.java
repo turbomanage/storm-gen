@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2012 Google, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,8 +26,18 @@ import android.database.sqlite.SQLiteDatabase;
 import com.turbomanage.storm.DatabaseHelper;
 import com.turbomanage.storm.TableHelper;
 
+/**
+ * Contains methods used to dump a table to a CSV file. Each
+ * instance is associated with one table.
+ *
+ * @author David M. Chandler
+ */
 public class CsvTableWriter extends CsvTableReader {
 
+	/**
+	 * Constructor requires a corresponding {@link TableHelper} class.
+	 * @param tableHelper
+	 */
 	@SuppressWarnings("rawtypes")
 	public CsvTableWriter(TableHelper tableHelper) {
 		super(tableHelper);
@@ -55,6 +65,13 @@ public class CsvTableWriter extends CsvTableReader {
 		return sb.toString().substring(1);
 	}
 
+	/**
+	 * Dumps a database table to a CSV file in the default location.
+	 * Returns the number of rows written to the file.
+	 *
+	 * @param dbHelper
+	 * @return count of rows in the exported file
+	 */
 	public int dumpToCsv(DatabaseHelper dbHelper) {
 		int numRowsWritten = 0;
 		String filename = getCsvFilename(dbHelper);

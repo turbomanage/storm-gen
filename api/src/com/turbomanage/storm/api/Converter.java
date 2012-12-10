@@ -20,9 +20,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.turbomanage.storm.types.TypeConverter;
 import com.turbomanage.storm.types.TypeConverter.BindType;
 import com.turbomanage.storm.types.TypeConverter.SqlType;
 
+/**
+ * Annotation for {@link TypeConverter}.
+ *
+ * @author David M. Chandler
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Converter {

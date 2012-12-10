@@ -18,6 +18,7 @@ package com.turbomanage.storm;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -26,10 +27,22 @@ import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.turbomanage.storm.api.DatabaseFactory;
 import com.turbomanage.storm.api.Persistable;
 import com.turbomanage.storm.exception.TooManyResultsException;
 import com.turbomanage.storm.query.FilterBuilder;
 
+/**
+ * Base DAO class for entity DAOs. Most of the runtime is implemented
+ * in this class. It is safe to construct new instances anywhere, as
+ * this class holds a reference to the {@link Context}, which it passes
+ * to the generated {@link DatabaseFactory} to obtain the singleton
+ * {@link SQLiteOpenHelper}.
+ *
+ * @author David M. Chandler
+ *
+ * @param <T> Entity type
+ */
 public abstract class SQLiteDao<T extends Persistable> {
 
 	private static final String TAG = SQLiteDao.class.getName();
@@ -37,6 +50,13 @@ public abstract class SQLiteDao<T extends Persistable> {
 	private final Context mContext;
 	protected final TableHelper<T> th;
 
+	/**
+	 * Constructor requires the {@link Context}, which you typically
+	 * obtain by calling {@link Activity#getApplicationContext()} in
+	 * your Activity.
+	 *
+	 * @param ctx Context
+	 */
 	@SuppressWarnings("unchecked")
 	public SQLiteDao(Context ctx) {
 		this.mContext = ctx;
@@ -52,9 +72,22 @@ public abstract class SQLiteDao<T extends Persistable> {
 	 */
 	public abstract DatabaseHelper getDbHelper(Context ctx);
 
+	/**
+	 * Generated subclasses implement to provide the entity's
+	 * {@link TableHelper}.
+	 *
+	 * @return TableHelper
+	 */
 	@SuppressWarnings("rawtypes")
 	public abstract TableHelper getTableHelper();
 
+	/**
+	 * Deletes a single row by ID. Returns the number of rows deleted
+	 * or 0 if unsuccessful.
+	 *
+	 * @param id
+	 * @return count of rows deleted
+	 */
 	public int delete(Long id) {
 		if (id != null) {
 			return getWritableDb().delete(th.getTableName(), th.getIdCol() + "=?", new String[]{id.toString()});
@@ -62,42 +95,81 @@ public abstract class SQLiteDao<T extends Persistable> {
 		return 0;
 	}
 
+	/**
+	 * Deletes all rows in the entity's table. Returns the number of
+	 * rows deleted.
+	 *
+	 * @return count of rows deleted
+	 */
 	public int deleteAll() {
 		return getWritableDb().delete(th.getTableName(), null, null);
 	}
 
 	/**
-	 * Return an object to construct a filter with AND conditions.
+	 * Returns a {@link FilterBuilder} for the entity type. The default
+	 * FilterBuilder constructs a query by ANDing all conditions.
 	 *
-	 * @return
+	 * @return FilterBuilder
 	 */
 	@SuppressWarnings("unchecked")
 	public FilterBuilder<T> filter() {
 		return new FilterBuilder<T>((SQLiteDao<T>) this);
 	}
 
+	/**
+	 * Returns a single object by ID or null if no match found.
+	 * If more than one match is found, throws
+	 * {@link TooManyResultsException}.
+	 *
+	 * @param id
+	 * @return One entity
+	 */
 	public T get(Long id) {
 		return filter().eq(th.getIdCol(), id).get();
 	}
 
+	/**
+	 * Constructs a query from an example object and returns
+	 * the matching entity or null. If more than one match is found,
+	 * throws {@link TooManyResultsException}. Uses in the comparison
+	 * only those fields of the example object which are different than
+	 * their default values.
+	 *
+	 * @param exampleObj
+	 * @return
+	 */
 	public T getByExample(T exampleObj) {
 		return asObject(queryByExample(exampleObj));
 	}
 
+	/**
+	 * Returns all rows in the entity table as a {@link List}.
+	 *
+	 * @return List<T>
+	 */
 	public List<T> listAll() {
 		return asList(queryAll());
 	}
 
+	/**
+	 * Returns all entities matching an example object. Uses in the comparison
+	 * only those fields of the example object which are different than
+	 * their default values.
+	 *
+	 * @param exampleObj
+	 * @return
+	 */
 	public List<T> listByExample(T exampleObj) {
 		return asList(queryByExample(exampleObj));
 	}
 
 	/**
-	 * Insert a row in the database. If the object's id is the
-	 * default long (0), the db will generate an id.
+	 * Inserts a row for the provided entity. If the entity's id is the
+	 * default long (0), the database generates an id and populates the
+	 * entity's ID field. Returns the generated ID or -1 if error.
 	 *
-	 * @param obj
-	 * @return row ID of newly inserted or -1 if err
+	 * @param obj An entity
+	 * @return ID of newly inserted row or -1 if err
 	 */
 	public long insert(T obj) {
 		ContentValues cv = th.getEditableValues(obj);
@@ -111,7 +183,7 @@ public abstract class SQLiteDao<T extends Persistable> {
 	}
 
 	/**
-	 * Efficiently insert a collection of objects using {@link InsertHelper}.
+	 * Efficiently insert a collection of entities using {@link InsertHelper}.
 	 *
 	 * @param many Collection of objects
 	 * @return count of inserted objects or -1 immediately if any errors
@@ -140,11 +212,11 @@ public abstract class SQLiteDao<T extends Persistable> {
 	}
 
 	/**
-	 * Insert or update, depending on whether the ID column is set to
-	 * a non-default value.
+	 * Update all columns for the row having the ID matching
+	 * the provided entity's ID.
 	 *
-	 * @param obj
-	 * @return
+	 * @param obj An entity
+	 * @return count of updated rows
 	 */
 	public long update(T obj) {
 		ContentValues cv = th.getEditableValues(obj);
@@ -155,13 +227,24 @@ public abstract class SQLiteDao<T extends Persistable> {
 	}
 
 	// TODO beware leaky abstractions--who owns the cursor?
+	/**
+	 * Convenience method queries the entity table using the provided
+	 * WHERE clause and parameters and returns a {@link Cursor}.
+	 *
+	 * The calling method MUST close the Cursor!
+	 *
+	 * @param where
+	 * @param params
+	 * @return Cursor
+	 */
 	public Cursor query(String where, String[] params) {
 		return getReadableDb().query(th.getTableName(), null, where, params, null, null, null);
 	}
 
 	/**
-	 * Execute a query which returns all rows in the table.
-	 * Calling method MUST close the {@link Cursor}.
+	 * Execute a query which returns all rows in the entity table.
+	 *
+	 * Calling method MUST close the {@link Cursor}!
 	 *
 	 * @return Cursor
 	 */
@@ -170,8 +253,11 @@ public abstract class SQLiteDao<T extends Persistable> {
 	}
 
 	/**
-	 * Execute a query which returns all rows in the table.
-	 * Calling method MUST close the {@link Cursor}.
+	 * Executes a query which returns all rows in the entity table
+	 * that match the fields of the example object having values other
+	 * than the defaults.
+	 *
+	 * Calling method MUST close the {@link Cursor}!
 	 *
 	 * @return Cursor
 	 */
@@ -183,7 +269,7 @@ public abstract class SQLiteDao<T extends Persistable> {
 	 * Converts all rows in a {@link Cursor} to a List of objects.
 	 *
 	 * @param c Cursor
-	 * @return
+	 * @return List<T>
 	 */
 	public List<T> asList(Cursor c) {
 		// TODO consider returning Iterable<T> instead
@@ -200,11 +286,11 @@ public abstract class SQLiteDao<T extends Persistable> {
 	}
 
 	/**
-	 * Converts a {@link Cursor} to an object. Throws an exception if there
-	 * was more than one row in the cursor.
+	 * Converts a {@link Cursor} to an object. If there is more than one
+	 * row in the Cursor, throws {@link TooManyResultsException}.
 	 *
 	 * @param c Cursor
-	 * @return Object
+	 * @return An entity
 	 */
 	public T asObject(Cursor c) {
 		try {
