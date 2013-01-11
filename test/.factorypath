@@ -1,3 +1,4 @@
 <factorypath>
-    <factorypathentry kind="WKSPJAR" id="/storm-impl/storm-apt.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="PLUGIN" id="storm-impl" enabled="true" runInBatchMode="false"/>
 </factorypath>
