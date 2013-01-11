@@ -58,7 +58,7 @@ public class MainProcessor extends AbstractProcessor {
 
 		cfg.setTemplateLoader(new ClassTemplateLoader(this.getClass(), "/res"));
 		this.logger = new ProcessorLogger(processingEnv.getMessager());
-		logger.info("Running MainProcessor...");
+		logger.info("Running MainProcessor... Again");
 
 		// Exit early if no annotations in this round so we don't overwrite the
 		// env file
