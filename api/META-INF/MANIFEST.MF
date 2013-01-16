@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: storm-api
+Bundle-SymbolicName: storm-api
+Bundle-Version: 1.0.0.0
+Bundle-ClassPath: storm-api.jar
+Export-Package: 
+ com.turbomanage.storm;
+  uses:="android.database.sqlite,
+   android.database,
+   com.turbomanage.storm.api,
+   android.content,
+   com.turbomanage.storm.query",
+ com.turbomanage.storm.api;uses:="com.turbomanage.storm.types",
+ com.turbomanage.storm.csv;uses:="com.turbomanage.storm",
+ com.turbomanage.storm.exception,
+ com.turbomanage.storm.query;uses:="android.database,com.turbomanage.storm",
+ com.turbomanage.storm.types
