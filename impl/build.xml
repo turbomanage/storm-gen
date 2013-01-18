@@ -53,6 +53,11 @@
             <zipfileset src="lib/freemarker-2.3.6.jar"></zipfileset>
         </jar>
         <copy file="storm-apt.jar" toFile="../../../storm-apt-${storm.version}.jar"/>
+        <jar destfile="storm-apt-only.jar">
+            <fileset dir="bin"></fileset>
+            <zipfileset src="lib/freemarker-2.3.6.jar"></zipfileset>
+        </jar>
+        <copy file="storm-apt-only.jar" toFile="../../../storm-apt-only-${storm.version}.jar"/>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
