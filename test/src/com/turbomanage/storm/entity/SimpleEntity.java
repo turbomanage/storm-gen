@@ -18,11 +18,11 @@ package com.turbomanage.storm.entity;
 import java.util.Date;
 
 import com.turbomanage.storm.api.Entity;
-import com.turbomanage.storm.api.Persistable;
+import com.turbomanage.storm.api.Id;
 import com.turbomanage.storm.converter.Latitude;
 
 @Entity
-public class SimpleEntity implements Persistable {
+public class SimpleEntity {
 
 	public enum EnumType {VALUE1, VALUE2};
 
@@ -51,11 +51,9 @@ public class SimpleEntity implements Persistable {
 	String wStringField;
 	Latitude wLatitudeField; // test custom converter
 
-	@Override
 	public long getId() {
 		return id;
 	}
-	@Override
 	public void setId(long id) {
 		this.id = id;
 	}

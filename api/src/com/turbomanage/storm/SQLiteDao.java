@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.turbomanage.storm.api.DatabaseFactory;
-import com.turbomanage.storm.api.Persistable;
 import com.turbomanage.storm.exception.TooManyResultsException;
 import com.turbomanage.storm.query.FilterBuilder;
 
@@ -43,7 +42,7 @@ import com.turbomanage.storm.query.FilterBuilder;
  *
  * @param <T> Entity type
  */
-public abstract class SQLiteDao<T extends Persistable> {
+public abstract class SQLiteDao<T> {
 
 	private static final String TAG = SQLiteDao.class.getName();
 
@@ -173,12 +172,12 @@ public abstract class SQLiteDao<T extends Persistable> {
 	 */
 	public long insert(T obj) {
 		ContentValues cv = th.getEditableValues(obj);
-		if (obj.getId() == 0) {
+		if (th.getId(obj) == 0) {
 			// the default, remove from ContentValues to allow autoincrement
 			cv.remove(th.getIdCol().toString());
 		}
 		long id = getWritableDb().insertOrThrow(th.getTableName(), null, cv);
-		obj.setId(id);
+		th.setId(obj, id);
 		return id;
 	}
 
@@ -195,7 +194,7 @@ public abstract class SQLiteDao<T extends Persistable> {
 		try {
 			for (T obj : many) {
 				ContentValues cv = th.getEditableValues(obj);
-				if (obj.getId() == 0) {
+				if (th.getId(obj) == 0) {
 					// the default, remove from ContentValues to allow autoincrement
 					cv.remove(th.getIdCol().toString());
 				}
@@ -220,7 +219,7 @@ public abstract class SQLiteDao<T extends Persistable> {
 	 */
 	public long update(T obj) {
 		ContentValues cv = th.getEditableValues(obj);
-		Long id = obj.getId();
+		Long id = th.getId(obj);
 		int numRowsUpdated = getWritableDb().update(th.getTableName(), cv, th.getIdCol()
 				+ "=?", new String[] { id.toString() });
 		return numRowsUpdated;

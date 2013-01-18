@@ -29,7 +29,7 @@ import javax.lang.model.type.TypeMirror;
 
 import com.turbomanage.storm.SQLiteDao;
 import com.turbomanage.storm.api.Entity;
-import com.turbomanage.storm.api.Persistable;
+import com.turbomanage.storm.api.Id;
 import com.turbomanage.storm.apt.ClassProcessor;
 import com.turbomanage.storm.apt.StormEnvironment;
 import com.turbomanage.storm.apt.converter.ConverterModel;
@@ -38,6 +38,7 @@ import com.turbomanage.storm.exception.TypeNotSupportedException;
 
 public class EntityProcessor extends ClassProcessor {
 
+	private static final String ID_FIELD = "id";
 	private static final String TAG = EntityProcessor.class.getName();
 	private EntityModel entityModel;
 
@@ -58,16 +59,13 @@ public class EntityProcessor extends ClassProcessor {
 		chooseBaseDao();
 		chooseDatabase();
 		readFields(typeElement);
+		inspectId();
 	}
 
 	protected void chooseBaseDao() {
-		List<String> iNames = super.inspectInterfaces();
-//		TODO Choose Dao base class based on interfaces
-		if (iNames.contains(Persistable.class.getName())) {
-			this.entityModel.setBaseDaoClass(SQLiteDao.class);
-		} else {
-			stormEnv.getLogger().error(TAG + ": Entities must implement Persistable", this.typeElement);
-		}
+//		List<String> iNames = super.inspectInterfaces();
+//		if (iNames.contains(Persistable.class.getName())) {
+		this.entityModel.setBaseDaoClass(SQLiteDao.class);
 	}
 
 	protected void chooseDatabase() {
@@ -92,6 +90,7 @@ public class EntityProcessor extends ClassProcessor {
 	@Override
 	protected void inspectField(VariableElement field) {
 		Set<Modifier> modifiers = field.getModifiers();
+		boolean hasId = (field.getAnnotation(Id.class) != null);
 		if (!modifiers.contains(Modifier.TRANSIENT)) {
 			String javaType = getFieldType(field);
 			if (TypeKind.DECLARED.equals(field.asType().getKind())) {
@@ -99,20 +98,60 @@ public class EntityProcessor extends ClassProcessor {
 				TypeElement typeElement = (TypeElement) type.asElement();
 				TypeMirror superclass = typeElement.getSuperclass();
 				if (ElementKind.ENUM.equals(typeElement.getKind())) {
-					entityModel.addField(field.getSimpleName().toString(), javaType, true, stormEnv.getConverterForType("java.lang.Enum"));
+					if (hasId) {
+						stormEnv.getLogger().error("@Id invalid on enums", field);
+					} else {
+						FieldModel fm = new FieldModel(field.getSimpleName().toString(), javaType, true, stormEnv.getConverterForType("java.lang.Enum"));
+						entityModel.addField(fm);
+					}
 					return;
 				}
 			}
 			// Verify supported type
 			try {
 				ConverterModel converter = stormEnv.getConverterForType(javaType);
-				entityModel.addField(field.getSimpleName().toString(), javaType, false, converter);
+				FieldModel f = new FieldModel(field.getSimpleName().toString(), javaType, false, converter);
+				if (hasId) {
+					if (entityModel.getIdField() == null) {
+						if ("long".equals(f.getJavaType())) {
+							entityModel.setIdField(f);
+						} else {
+							stormEnv.getLogger().error("@Id field must be of type long", field);
+						}
+					} else {
+						stormEnv.getLogger().error("Duplicate @Id", field);
+					}
+				}
+				entityModel.addField(f);
 			} catch (TypeNotSupportedException e) {
 				stormEnv.getLogger().error(TAG + "inspectField", e, field);
 			} catch (Exception e) {
 				stormEnv.getLogger().error(TAG, e, field);
 			}
 			// TODO verify getter + setter
+		} else if (hasId) {
+			stormEnv.getLogger().error("@Id fields cannot be transient", field);
+		}
+	}
+
+	/**
+	 * Verifies that the entity has exactly one id field of type long. 
+	 */
+	private void inspectId() {
+		if (entityModel.getIdField() == null) {
+			// Default to field named "id"
+			List<FieldModel> fields = entityModel.getFields();
+			for (FieldModel f : fields) {
+				if (ID_FIELD.equals(f.getFieldName())) {
+					entityModel.setIdField(f);
+				}
+			}
+		}
+		FieldModel idField = entityModel.getIdField();
+		if (idField != null && "long".equals(idField.getJavaType())) {
+			return;
+		} else {
+			stormEnv.getLogger().error("Entity must contain a field named id or annotated with @Id of type long", typeElement);
 		}
 	}
 

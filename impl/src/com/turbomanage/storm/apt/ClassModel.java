@@ -36,10 +36,9 @@ public abstract class ClassModel {
 		return fields;
 	}
 
-	public void addField(String fieldName, String javaType, boolean isEnum, ConverterModel converter) {
-		FieldModel field = new FieldModel(fieldName, javaType, isEnum, converter);
+	public void addField(FieldModel field) {
 		fields.add(field);
-		if (isEnum) {
+		if (field.isEnum()) {
 			return;
 		}
 		// add import for converter if needed

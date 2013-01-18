@@ -20,7 +20,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.turbomanage.storm.api.Persistable;
 import com.turbomanage.storm.csv.CsvTableReader;
 import com.turbomanage.storm.csv.CsvTableWriter;
 import com.turbomanage.storm.query.FilterBuilder;
@@ -37,7 +36,7 @@ import com.turbomanage.storm.query.FilterBuilder;
  *
  * @author David M. Chandler
  */
-public abstract class TableHelper<T extends Persistable> {
+public abstract class TableHelper<T> {
 
 	/**
 	 * Marker interface for column enums
@@ -52,6 +51,24 @@ public abstract class TableHelper<T extends Persistable> {
 	 * @return array of column names in declared order
 	 */
 	public abstract Column[] getColumns();
+	
+	/**
+	 * Obtains an entity's ID field. This abstraction supports
+	 * the optional @Id annotation.
+	 * 
+	 * @param obj The entity
+	 * @return long id
+	 */
+	public abstract long getId(T obj);
+	
+	/**
+	 * Sets and entity's ID field. This abstraction supports
+	 * the optional @Id annotation.
+	 * 
+	 * @param obj The entity
+	 * @param id
+	 */
+	public abstract void setId(T obj, long id);
 
 	/**
 	 * @return SQL table name

@@ -22,7 +22,6 @@ import android.database.Cursor;
 
 import com.turbomanage.storm.SQLiteDao;
 import com.turbomanage.storm.TableHelper.Column;
-import com.turbomanage.storm.api.Persistable;
 import com.turbomanage.storm.types.BooleanConverter;
 import com.turbomanage.storm.types.ByteConverter;
 import com.turbomanage.storm.types.CharConverter;
@@ -38,7 +37,7 @@ import com.turbomanage.storm.types.ShortConverter;
  *
  * @param <T>
  */
-public class FilterBuilder<T extends Persistable> {
+public class FilterBuilder<T> {
 
 	private static final String TAG = FilterBuilder.class.getName();
 	private SQLiteDao<T> dao;
