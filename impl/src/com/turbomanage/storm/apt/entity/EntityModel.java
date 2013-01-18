@@ -79,4 +79,19 @@ public class EntityModel extends ClassModel {
 		return getEntityName();
 	}
 
+	public FieldModel getIdField() {
+		for (FieldModel f : this.fields) {
+			if (f.isEntityId()) {
+				return f;
+			}
+		}
+		return null;
+	}
+
+	void setIdField(FieldModel idField) {
+		idField.setEntityId(true);
+		// TODO use a view instead
+		idField.setColName("_id");
+	}
+
 }

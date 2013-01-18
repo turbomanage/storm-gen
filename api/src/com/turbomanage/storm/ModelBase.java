@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.turbomanage.storm;
 
-import com.turbomanage.storm.api.Persistable;
 
 
 /**
@@ -24,7 +23,7 @@ import com.turbomanage.storm.api.Persistable;
  * 
  * @author David M. Chandler
  */
-public abstract class ModelBase implements Persistable {
+public abstract class ModelBase {
 
     public long id;
     public int version;

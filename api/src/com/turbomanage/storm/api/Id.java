@@ -15,17 +15,21 @@
  ******************************************************************************/
 package com.turbomanage.storm.api;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Interface which provides access to an entity's ID.
- * Currently, all entity types must implement this interface.
- * However, it is likely to be replaced by an annotation.
+ * Annotation for an entity's ID field. The ID field must be of type long,
+ * and there must be a corresponding getter and setter.
+ * 
+ * If not present, stORM will look for long getId() and setId(long id).
  *
  * @author David M. Chandler
  */
-public interface Persistable {
-
-	public long getId();
-
-	public void setId(long id);
+@Retention(RetentionPolicy.SOURCE)
+@Target(ElementType.FIELD)
+public @interface Id {
 
 }

@@ -21,9 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for entity POJOs. Currently, entity classes
- * must also implement {@link Persistable}; however, that is likely
- * to be replaced with an ID annotation.
+ * Annotation for entity POJOs. The only requirement for
+ * entity classes is that they have a field of type long
+ * named id or annotated with @Id
  *
  * @author David M. Chandler
  */

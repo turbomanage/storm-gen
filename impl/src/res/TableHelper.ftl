@@ -39,6 +39,16 @@ public class ${tableHelperName} extends TableHelper<${entityName}> {
 	public Column[] getColumns() {
 		return Columns.values();
 	}
+	
+	@Override
+	public long getId(${entityName} obj) {
+		return obj.${idField.getter}();
+	}
+	
+	@Override
+	public void setId(${entityName} obj, long id) {
+		obj.${idField.setter}(id);
+	}
 
 	@Override
 	public Column getIdCol() {

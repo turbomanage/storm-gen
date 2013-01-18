@@ -41,7 +41,7 @@ import com.turbomanage.storm.types.TypeConverter.SqlType;
 public class FieldModel {
 
 	private String fieldName, colName, javaType;
-	private boolean isEnum;
+	private boolean isEnum, isEntityId;
 	private ConverterModel converter;
 
 	public FieldModel(String fieldName, String javaType, boolean isEnum, ConverterModel converter) {
@@ -49,12 +49,8 @@ public class FieldModel {
 		this.javaType = javaType;
 		this.isEnum = isEnum;
 		this.converter = converter;
-		// TODO Use @Id or @ColumnName annotation instead
-		if ("id".equals(fieldName)) {
-			this.colName = "_id";
-		} else {
-			this.colName = fieldName;
-		}
+		// TODO or @ColumnName
+		this.colName = fieldName;
 	}
 
 	public String getFieldName() {
@@ -63,6 +59,10 @@ public class FieldModel {
 
 	public String getColName() {
 		return colName.toUpperCase();
+	}
+	
+	void setColName(String colName) {
+		this.colName = colName;
 	}
 
 	public String getJavaType() {
@@ -104,8 +104,7 @@ public class FieldModel {
 	}
 
 	public String getSqlType() {
-		// TODO Hack. Add @Id annotation instead.
-		if ("id".equals(fieldName))
+		if (this.isEntityId)
 			return "INTEGER PRIMARY KEY AUTOINCREMENT";
 		else if (isEnum) {
 			return SqlType.TEXT.name();
@@ -148,4 +147,11 @@ public class FieldModel {
 		return isEnum;
 	}
 
+	boolean isEntityId() {
+		return isEntityId;
+	}
+
+	void setEntityId(boolean isEntityId) {
+		this.isEntityId = isEntityId;
+	}
 }
