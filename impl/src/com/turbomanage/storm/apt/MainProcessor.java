@@ -78,6 +78,9 @@ public class MainProcessor extends AbstractProcessor {
 			try {
 				ConverterProcessor cproc = new ConverterProcessor(element, stormEnv);
 				cproc.populateModel();
+			} catch (StormAnnotationException e) {
+				logger.error(e.getMessage(), e.getElement());
+				return true;
 			} catch (Exception e) {
 				StringWriter sw = new StringWriter();
 				PrintWriter out = new PrintWriter(sw);
@@ -93,6 +96,9 @@ public class MainProcessor extends AbstractProcessor {
 				DatabaseProcessor dbProc = new DatabaseProcessor(element, stormEnv);
 				dbProc.populateModel();
 				stormEnv.addDatabase(dbProc.getModel());
+			} catch (StormAnnotationException e) {
+				logger.error(e.getMessage(), e.getElement());
+				return true;
 			} catch (Exception e) {
 				logger.error(ERR_MSG, e, element);
 				return true;
@@ -109,6 +115,9 @@ public class MainProcessor extends AbstractProcessor {
 				// Generate EntityTable
 				TableHelperTemplate tableHelperTemplate = new TableHelperTemplate(eproc.getModel());
 				processTemplate(processingEnv, cfg, tableHelperTemplate);
+			} catch (StormAnnotationException e) {
+				logger.error(e.getMessage(), e.getElement());
+				return true;
 			} catch (Exception e) {
 				logger.error(ERR_MSG, e, element);
 				return true;
