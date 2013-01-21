@@ -107,7 +107,7 @@ public class MainProcessor extends AbstractProcessor {
 
 		for (Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
 			try {
-				EntityProcessor eproc = new EntityProcessor(element, stormEnv);
+				ClassProcessor eproc = new EntityProcessor(element, stormEnv);
 				eproc.populateModel();
 				// Generate EntityDao
 				EntityDaoTemplate daoTemplate = new EntityDaoTemplate(eproc.getModel());

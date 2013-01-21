@@ -122,4 +122,12 @@ public abstract class ClassProcessor {
 		return iNames;
 	}
 
+	protected void abort(String msg) {
+		abort(msg, this.typeElement);
+	}
+
+	protected void abort(String msg, Element element) {
+		throw new StormAnnotationException(msg, element);
+	}
+
 }
