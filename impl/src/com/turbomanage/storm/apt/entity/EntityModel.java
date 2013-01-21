@@ -72,7 +72,7 @@ public class EntityModel extends ClassModel {
 	}
 	
 	public String getTableHelperName() {
-		return getTableName() + TABLE_SUFFIX;
+		return capFirst(getTableName().replace("[", "").replace("]", "") + TABLE_SUFFIX);
 	}
 
 	public String getTableName() {

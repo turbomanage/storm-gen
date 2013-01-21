@@ -25,7 +25,7 @@ import com.turbomanage.storm.TestDatabaseHelper;
 import com.turbomanage.storm.TestDbFactory;
 import com.turbomanage.storm.entity.CustomEntity;
 import com.turbomanage.storm.entity.dao.CustomEntityDao;
-import com.turbomanage.storm.entity.dao.CustomNameTable;
+import com.turbomanage.storm.entity.dao.OrderTable;
 
 public class CustomEntityTestCase extends AndroidTestCase {
 	private Context ctx;
@@ -55,7 +55,7 @@ public class CustomEntityTestCase extends AndroidTestCase {
 	public void testCustomTableName() {
 		TableHelper[] tableHelpers = TestDbFactory.getDatabaseHelper(ctx).getDbFactory().getTableHelpers();
 		for (TableHelper th : tableHelpers) {
-			if (th instanceof CustomNameTable) {
+			if (th instanceof OrderTable) {
 				return;
 			}
 		}

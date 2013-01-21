@@ -31,6 +31,8 @@ import com.turbomanage.storm.SQLiteDao;
 import com.turbomanage.storm.api.Entity;
 import com.turbomanage.storm.api.Id;
 import com.turbomanage.storm.apt.ClassProcessor;
+import com.turbomanage.storm.apt.SqlUtil;
+import com.turbomanage.storm.apt.StormAnnotationException;
 import com.turbomanage.storm.apt.StormEnvironment;
 import com.turbomanage.storm.apt.converter.ConverterModel;
 import com.turbomanage.storm.apt.database.DatabaseModel;
@@ -44,6 +46,14 @@ public class EntityProcessor extends ClassProcessor {
 
 	public EntityProcessor(Element el, StormEnvironment stormEnv) {
 		super(el, stormEnv);
+	}
+
+	private void abort(String msg) {
+		abort(msg, this.typeElement);
+	}
+
+	private void abort(String msg, Element element) {
+		throw new StormAnnotationException(msg, element);
 	}
 
 	@Override
@@ -65,11 +75,17 @@ public class EntityProcessor extends ClassProcessor {
 	}
 
 	private void parseEntity(Entity entity) {
-		String tableName = entity.tableName();
+		validateTableName(entity.tableName());
+	}
+
+	private void validateTableName(String tableName) {
 		if (tableName != null && tableName.length() > 0) {
 			this.entityModel.setTableName(tableName);
 		} else {
 			this.entityModel.setTableName(getClassName());
+		}
+		if (!SqlUtil.isValidIdentifier(this.entityModel.getTableName())) {
+			abort(tableName + " is not a valid identifier. Enclose SQL keywords with [].");
 		}
 	}
 
@@ -88,12 +104,12 @@ public class EntityProcessor extends ClassProcessor {
 			if (db != null) {
 				this.entityModel.setDatabase(db);
 			} else {
-				stormEnv.getLogger().error(TAG + ": There is no @Database named " + dbName, this.typeElement);
+				abort("There is no @Database named " + dbName);
 			}
 		} else if (defaultDb != null) {
 			this.entityModel.setDatabase(defaultDb);
 		} else {
-			stormEnv.getLogger().error(TAG + ": You must define at least one @Database", this.typeElement);
+			abort("You must define at least one @Database");
 		}
 	}
 
@@ -109,7 +125,7 @@ public class EntityProcessor extends ClassProcessor {
 				TypeMirror superclass = typeElement.getSuperclass();
 				if (ElementKind.ENUM.equals(typeElement.getKind())) {
 					if (hasId) {
-						stormEnv.getLogger().error("@Id invalid on enums", field);
+						abort("@Id invalid on enums", field);
 					} else {
 						FieldModel fm = new FieldModel(field.getSimpleName().toString(), javaType, true, stormEnv.getConverterForType("java.lang.Enum"));
 						entityModel.addField(fm);
@@ -126,10 +142,10 @@ public class EntityProcessor extends ClassProcessor {
 						if ("long".equals(f.getJavaType())) {
 							entityModel.setIdField(f);
 						} else {
-							stormEnv.getLogger().error("@Id field must be of type long", field);
+							abort("@Id field must be of type long", field);
 						}
 					} else {
-						stormEnv.getLogger().error("Duplicate @Id", field);
+						abort("Duplicate @Id", field);
 					}
 				}
 				entityModel.addField(f);
@@ -140,7 +156,7 @@ public class EntityProcessor extends ClassProcessor {
 			}
 			// TODO verify getter + setter
 		} else if (hasId) {
-			stormEnv.getLogger().error("@Id fields cannot be transient", field);
+			abort("@Id fields cannot be transient", field);
 		}
 	}
 
@@ -161,7 +177,7 @@ public class EntityProcessor extends ClassProcessor {
 		if (idField != null && "long".equals(idField.getJavaType())) {
 			return;
 		} else {
-			stormEnv.getLogger().error("Entity must contain a field named id or annotated with @Id of type long", typeElement);
+			abort("Entity must contain a field named id or annotated with @Id of type long");
 		}
 	}
 
