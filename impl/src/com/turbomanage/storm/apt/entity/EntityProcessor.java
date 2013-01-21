@@ -32,7 +32,6 @@ import com.turbomanage.storm.api.Entity;
 import com.turbomanage.storm.api.Id;
 import com.turbomanage.storm.apt.ClassProcessor;
 import com.turbomanage.storm.apt.SqlUtil;
-import com.turbomanage.storm.apt.StormAnnotationException;
 import com.turbomanage.storm.apt.StormEnvironment;
 import com.turbomanage.storm.apt.converter.ConverterModel;
 import com.turbomanage.storm.apt.database.DatabaseModel;
@@ -46,14 +45,6 @@ public class EntityProcessor extends ClassProcessor {
 
 	public EntityProcessor(Element el, StormEnvironment stormEnv) {
 		super(el, stormEnv);
-	}
-
-	private void abort(String msg) {
-		abort(msg, this.typeElement);
-	}
-
-	private void abort(String msg, Element element) {
-		throw new StormAnnotationException(msg, element);
 	}
 
 	@Override

@@ -15,11 +15,12 @@
  ******************************************************************************/
 package com.turbomanage.storm.apt.entity;
 
+import com.turbomanage.storm.apt.ClassModel;
 import com.turbomanage.storm.apt.ClassTemplate;
 
 public class TableHelperTemplate extends ClassTemplate {
 
-	public TableHelperTemplate(EntityModel model) {
+	public TableHelperTemplate(ClassModel model) {
 		super(model);
 	}
 

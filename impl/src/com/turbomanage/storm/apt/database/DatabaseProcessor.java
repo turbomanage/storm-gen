@@ -20,6 +20,7 @@ import javax.lang.model.element.VariableElement;
 
 import com.turbomanage.storm.api.Database;
 import com.turbomanage.storm.apt.ClassProcessor;
+import com.turbomanage.storm.apt.SqlUtil;
 import com.turbomanage.storm.apt.StormEnvironment;
 
 public class DatabaseProcessor extends ClassProcessor {
@@ -38,8 +39,15 @@ public class DatabaseProcessor extends ClassProcessor {
 	@Override
 	public void populateModel() {
 		Database dba = this.typeElement.getAnnotation(Database.class);
+		checkDbName(dba.name());
 		databaseModel = new DatabaseModel(dba.name(), dba.version(), getQualifiedClassName());
 		super.populateModel();
+	}
+
+	private void checkDbName(String dbName) {
+		if (!SqlUtil.isValidJavaIdentifier(dbName)) {
+			abort(dbName + " is not a valid Java identifier.");
+		}
 	}
 
 	@Override
