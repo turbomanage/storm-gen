@@ -25,6 +25,7 @@ public class EntityModel extends ClassModel {
 	private static final String TABLE_SUFFIX = "Table";
 	private Class<SQLiteDao> baseDaoClass;
 	private DatabaseModel dbModel;
+	private String tableName;
 
 	public String getEntityName() {
 		return this.getClassName();
@@ -75,8 +76,11 @@ public class EntityModel extends ClassModel {
 	}
 
 	public String getTableName() {
-		// TODO Make configurable in @Entity
-		return getEntityName();
+		return tableName;
+	}
+
+	void setTableName(String tableName) {
+		this.tableName = tableName;
 	}
 
 	public FieldModel getIdField() {

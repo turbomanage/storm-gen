@@ -32,5 +32,6 @@ import java.lang.annotation.Target;
 public @interface Entity {
 
 	String dbName() default "";
+	String tableName() default "";
 
 }

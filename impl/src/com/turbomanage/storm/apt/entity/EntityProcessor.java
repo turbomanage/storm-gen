@@ -53,23 +53,33 @@ public class EntityProcessor extends ClassProcessor {
 
 	@Override
 	public void populateModel() {
+		Entity entity = this.typeElement.getAnnotation(Entity.class);
 		this.entityModel = new EntityModel();
 		super.populateModel();
 		this.entityModel.addImport(getQualifiedClassName());
-		chooseBaseDao();
-		chooseDatabase();
+		parseEntity(entity);
+		chooseBaseDao(entity);
+		chooseDatabase(entity);
 		readFields(typeElement);
 		inspectId();
 	}
 
-	protected void chooseBaseDao() {
+	private void parseEntity(Entity entity) {
+		String tableName = entity.tableName();
+		if (tableName != null && tableName.length() > 0) {
+			this.entityModel.setTableName(tableName);
+		} else {
+			this.entityModel.setTableName(getClassName());
+		}
+	}
+
+	protected void chooseBaseDao(Entity entity) {
 //		List<String> iNames = super.inspectInterfaces();
 //		if (iNames.contains(Persistable.class.getName())) {
 		this.entityModel.setBaseDaoClass(SQLiteDao.class);
 	}
 
-	protected void chooseDatabase() {
-		Entity entity = this.typeElement.getAnnotation(Entity.class);
+	protected void chooseDatabase(Entity entity) {
 		DatabaseModel defaultDb = stormEnv.getDefaultDb();
 		if (entity.dbName().length() > 0) {
 			// Add db to entity model and vice versa
