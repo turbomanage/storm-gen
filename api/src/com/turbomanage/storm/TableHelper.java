@@ -16,6 +16,7 @@
 package com.turbomanage.storm;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteDatabase;
@@ -190,39 +191,41 @@ public abstract class TableHelper<T> {
 	/**
 	 * Backs up the current table and restores into the new schema.
 	 *
-	 * @param dbHelper
+	 * @param db
+	 * @param ctx
 	 */
-	public void backupAndRestore(DatabaseHelper dbHelper) {
-		this.backup(dbHelper);
-		this.dropAndCreate(dbHelper);
-		this.restore(dbHelper);
+	public void backupAndRestore(SQLiteDatabase db, Context ctx) {
+		this.backup(db, ctx);
+		this.dropAndCreate(db);
+		this.restore(db, ctx);
 	}
 
 	/**
 	 * Backs up the current table to a CSV file.
 	 *
-	 * @param dbHelper
+	 * @param db
+	 * @param ctx
 	 */
-	public void backup(DatabaseHelper dbHelper) {
-		new CsvTableWriter(this).dumpToCsv(dbHelper);
+	public void backup(SQLiteDatabase db, Context ctx) {
+		new CsvTableWriter(this).dumpToCsv(db, ctx);
 	}
 
 	/**
 	 * Restores a table from a text file.
 	 *
-	 * @param dbHelper
+	 * @param db
+	 * @param ctx
 	 */
-	public void restore(DatabaseHelper dbHelper) {
-		new CsvTableReader(this).importFromCsv(dbHelper);
+	public void restore(SQLiteDatabase db, Context ctx) {
+		new CsvTableReader(this).importFromCsv(db, ctx);
 	}
 
 	/**
 	 * Drops a table and recreates it.
 	 *
-	 * @param dbHelper
+	 * @param db
 	 */
-	protected void dropAndCreate(DatabaseHelper dbHelper) {
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
+	protected void dropAndCreate(SQLiteDatabase db) {
 		this.onDrop(db);
 		this.onCreate(db);
 	}

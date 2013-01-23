@@ -24,11 +24,11 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
+import android.content.Context;
 import android.database.DatabaseUtils;
 import android.database.DatabaseUtils.InsertHelper;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.turbomanage.storm.DatabaseHelper;
 import com.turbomanage.storm.TableHelper;
 
 /**
@@ -55,26 +55,27 @@ public class CsvTableReader {
 		this.th = tableHelper;
 	}
 
-	protected String getCsvFilename(DatabaseHelper dbHelper) {
-		String dbName = dbHelper.getDbFactory().getName();
+	protected String getCsvFilename(String dbPath, int dbVersion) {
+		String[] path = dbPath.split("/");
+		String dbName = path[path.length-1];
 		String tableName = th.getTableName();
-		int version = dbHelper.getDbFactory().getVersion();
-		return String.format("%s.v%d.%s", dbName, version, tableName);
+		return String.format("%s.v%d.%s", dbName, dbVersion, tableName);
 	}
 
 	/**
 	 * Attempts to import a database table from a CSV
 	 * file in the default location.
 	 *
-	 * @param dbHelper
+	 * @param db
+	 * @param ctx
 	 * @return count of rows imported or -1 if error
 	 */
-	public int importFromCsv(DatabaseHelper dbHelper) {
-		String filename = getCsvFilename(dbHelper);
+	public int importFromCsv(SQLiteDatabase db, Context ctx) {
+		String filename = getCsvFilename(db.getPath(), db.getVersion());
 		FileInputStream fileInputStream;
 		try {
-			fileInputStream = dbHelper.getContext().openFileInput(filename);
-			return importFromCsv(dbHelper, fileInputStream);
+			fileInputStream = ctx.openFileInput(filename);
+			return importFromCsv(db, fileInputStream);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return -1;
@@ -87,13 +88,12 @@ public class CsvTableReader {
 	 * for efficiency and so that all inserts will succeed or fail
 	 * together.
 	 *
-	 * @param dbHelper
+	 * @param db
 	 * @param is
 	 * @return count of rows imported or -1 if error
 	 */
-	public int importFromCsv(DatabaseHelper dbHelper, InputStream is) {
+	public int importFromCsv(SQLiteDatabase db, InputStream is) {
 		int numInserts = 0;
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		db.beginTransaction();
 		insertHelper = new DatabaseUtils.InsertHelper(db,
 				th.getTableName());
