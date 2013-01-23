@@ -40,8 +40,18 @@ public class DatabaseProcessor extends ClassProcessor {
 	public void populateModel() {
 		Database dba = this.typeElement.getAnnotation(Database.class);
 		checkDbName(dba.name());
-		databaseModel = new DatabaseModel(dba.name(), dba.version(), getQualifiedClassName());
-		super.populateModel();
+		// Check for existing
+		DatabaseModel existingDb = stormEnv.getDbByName(getQualifiedClassName());
+		if (existingDb != null) {
+			// Update properties
+			existingDb.setDbName(dba.name());
+			existingDb.setDbVersion(dba.version());
+			databaseModel = existingDb;
+		} else {
+			// New DatabaseHelper class
+			databaseModel = new DatabaseModel(dba.name(), dba.version(), getQualifiedClassName());
+			super.populateModel();
+		}
 	}
 
 	private void checkDbName(String dbName) {

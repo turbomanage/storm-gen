@@ -22,9 +22,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.processing.Filer;
 import javax.tools.FileObject;
@@ -61,7 +63,7 @@ public class StormEnvironment {
 	public static final String END_CONVERTERS = ":CONV_END";
 	private static final String ENV_FILE = "stormEnv";
 	private ProcessorLogger logger;
-	private List<DatabaseModel> dbModels = new ArrayList<DatabaseModel>();
+	private Map<String,DatabaseModel> dbModels = new TreeMap<String,DatabaseModel>();
 	private List<ConverterModel> converters = new ArrayList<ConverterModel>();
 	private Map<String, ConverterModel> typeMap = new HashMap<String, ConverterModel>();
 
@@ -90,26 +92,20 @@ public class StormEnvironment {
 	}
 
 	void addDatabase(DatabaseModel dbModel) {
-		dbModels.add(dbModel);
+		dbModels.put(dbModel.getQualifiedClassName(), dbModel);
 	}
 
-	List<DatabaseModel> getDbModels() {
-		return dbModels;
+	Collection<DatabaseModel> getDbModels() {
+		return dbModels.values();
 	}
 
 	public DatabaseModel getDbByName(String helperClass) {
-		// iterate over all dbs and find matching
-		for (DatabaseModel dbModel : dbModels) {
-			if (dbModel.getDbHelperClass().equals(helperClass)) {
-				return dbModel;
-			}
-		}
-		return null;
+		return dbModels.get(helperClass);
 	}
 
 	public DatabaseModel getDefaultDb() {
 		if (dbModels.size() > 0) {
-			return dbModels.get(0);
+			return dbModels.values().iterator().next();
 		}
 		return null;
 	}
@@ -182,7 +178,7 @@ public class StormEnvironment {
 			}
 			out.println(END_CONVERTERS);
 			// Dump databases
-			for (DatabaseModel dbModel : dbModels) {
+			for (DatabaseModel dbModel : dbModels.values()) {
 				dbModel.writeToIndex(out);
 			}
 			out.close();

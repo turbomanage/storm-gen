@@ -31,6 +31,9 @@
 
 package com.turbomanage.storm.apt;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic.Kind;
@@ -86,14 +89,10 @@ public class ProcessorLogger {
     }
 
     public String formatErrorMessage(String msg, Exception ex) {
-        StringBuilder sb = new StringBuilder(msg);
-
-        if (ex != null) {
-            sb.append(": ").append(ex.getClass().getCanonicalName());
-            sb.append(": ").append(ex.getLocalizedMessage());
-        }
-
-        return sb.toString();
+		StringWriter sw = new StringWriter();
+		PrintWriter out = new PrintWriter(sw);
+		ex.printStackTrace(out);
+		return msg + ": " + sw.toString();
     }
 
 }

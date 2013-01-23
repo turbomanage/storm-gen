@@ -32,14 +32,14 @@ import com.turbomanage.storm.csv.CsvUtils;
 public class DatabaseModel extends ClassModel {
 
 	private String dbName;
-	int dbVersion;
+	private int dbVersion;
 	private List<EntityModel> entities = new ArrayList<EntityModel>();
 	private List<String> tableHelpers = new ArrayList<String>();
 
 	public DatabaseModel(String dbName, int dbVersion, String helperClass) {
 		super();
-		this.dbName = dbName;
-		this.dbVersion = dbVersion;
+		this.setDbName(dbName);
+		this.setDbVersion(dbVersion);
 		parseQualifiedClassName(helperClass);
 	}
 
@@ -47,8 +47,16 @@ public class DatabaseModel extends ClassModel {
 		return dbName;
 	}
 
+	void setDbName(String dbName) {
+		this.dbName = dbName;
+	}
+
 	public int getDbVersion() {
 		return dbVersion;
+	}
+
+	void setDbVersion(int dbVersion) {
+		this.dbVersion = dbVersion;
 	}
 
 	public String getDbHelperClass() {
@@ -121,8 +129,8 @@ public class DatabaseModel extends ClassModel {
 	public void writeToIndex(PrintWriter out) {
 		out.println(StormEnvironment.BEGIN_DATABASE);
 		Map<String,String> dbMap = new HashMap<String,String>();
-		dbMap.put("dbName", this.dbName);
-		dbMap.put("dbVersion", String.valueOf(this.dbVersion));
+		dbMap.put("dbName", this.getDbName());
+		dbMap.put("dbVersion", String.valueOf(this.getDbVersion()));
 		dbMap.put("helperClass", this.getQualifiedClassName());
 		String dbInfo = CsvUtils	.mapToCsv(dbMap);
 		out.println(dbInfo);

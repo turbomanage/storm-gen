@@ -9,7 +9,7 @@ public class CustomEntity {
 	private long id;
 	@Id
 	private long customId;
-
+	
 	public long getId() {
 		return id;
 	}
@@ -25,4 +25,5 @@ public class CustomEntity {
 	public void setCustomId(long customId) {
 		this.customId = customId;
 	}
+
 }
