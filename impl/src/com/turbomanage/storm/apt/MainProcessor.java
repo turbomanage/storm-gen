@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.turbomanage.storm.apt;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Set;
 
@@ -82,10 +80,7 @@ public class MainProcessor extends AbstractProcessor {
 				logger.error(e.getMessage(), e.getElement());
 				return true;
 			} catch (Exception e) {
-				StringWriter sw = new StringWriter();
-				PrintWriter out = new PrintWriter(sw);
-				e.printStackTrace(out);
-				logger.error(ERR_MSG + sw.toString(), e, element);
+				logger.error(ERR_MSG, e, element);
 				return true;
 			}
 		}
@@ -127,8 +122,13 @@ public class MainProcessor extends AbstractProcessor {
 		// Second pass to generate DatabaseFactory templates now that
 		// all entities have been associated with a db
 		for (DatabaseModel dbModel : stormEnv.getDbModels()) {
-			DatabaseFactoryTemplate dbFactoryTemplate = new DatabaseFactoryTemplate(dbModel);
-			processTemplate(processingEnv, cfg, dbFactoryTemplate);
+			try {
+				DatabaseFactoryTemplate dbFactoryTemplate = new DatabaseFactoryTemplate(dbModel);
+				processTemplate(processingEnv, cfg, dbFactoryTemplate);
+			} catch (Exception e) {
+				logger.error(ERR_MSG, e);
+				return true;
+			} 
 		}
 
 		// Write all processed dbs to index to support incremental compilation
