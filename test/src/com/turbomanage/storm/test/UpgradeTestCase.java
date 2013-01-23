@@ -54,10 +54,10 @@ public class UpgradeTestCase extends AndroidTestCase {
 
 	private void openDatabase() {
 		dbHelper = TestDbFactory.getDatabaseHelper(ctx);
-		SQLiteDatabase db = dbHelper.getReadableDatabase();
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		assertEquals(TestDatabaseHelper.DB_VERSION, db.getVersion());
 		// wipe database
-		dbHelper.dropAndCreate();
+		dbHelper.dropAndCreate(db);
 	}
 
 	private void persistRandomEntities(int n) {
@@ -74,10 +74,11 @@ public class UpgradeTestCase extends AndroidTestCase {
 		SimpleEntity e = newTestEntity();
 		dao.insert(e);
 		List<SimpleEntity> before = dao.listAll();
-		dbHelper.backupAllTablesToCsv();
-		dbHelper.dropAndCreate();
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		dbHelper.backupAllTablesToCsv(db, ctx);
+		dbHelper.dropAndCreate(db);
 		assertEquals(0, dao.listAll().size());
-		dbHelper.restoreAllTablesFromCsv();
+		dbHelper.restoreAllTablesFromCsv(db, ctx);
 		List<SimpleEntity> after = dao.listAll();
 		for (int i = 0; i < before.size(); i++) {
 			DaoTestCase.assertAllFieldsMatch(before.get(i), after.get(i));
@@ -90,11 +91,12 @@ public class UpgradeTestCase extends AndroidTestCase {
 	 * @throws IOException
 	 */
 	public void testWriteToCsv() throws IOException {
-		dbHelper.dropAndCreate();
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		dbHelper.dropAndCreate(db);
 		SimpleEntity populatedEntity = newTestEntity();
 		dao.insert(populatedEntity);
 		dao.insert(new SimpleEntity()); // default
-		dbHelper.backupAllTablesToCsv();
+		dbHelper.backupAllTablesToCsv(db, ctx);
 		FileInputStream ois = ctx.openFileInput("testDb.v2.SimpleEntity");
 		InputStreamReader isr = new InputStreamReader(ois);
 		BufferedReader reader = new BufferedReader(isr);
@@ -113,10 +115,11 @@ public class UpgradeTestCase extends AndroidTestCase {
 	 * have the expected default values.
 	 */
 	public void testReadFromCsv() {
-		dbHelper.dropAndCreate();
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		dbHelper.dropAndCreate(db);
 		SimpleEntityTable th = new SimpleEntityTable();
 		InputStream csvStream = this.getClass().getClassLoader().getResourceAsStream("assets/testDb.v1.SimpleEntity");
-		new CsvTableReader(th).importFromCsv(dbHelper, csvStream);
+		new CsvTableReader(th).importFromCsv(db, csvStream);
 		List<SimpleEntity> listAll = dao.listAll();
 		assertEquals(2, listAll.size());
 		SimpleEntity testEntity = newTestEntity();
@@ -129,10 +132,11 @@ public class UpgradeTestCase extends AndroidTestCase {
 	}
 
 	public void testRestoreWithDefaultValuesForNewFields() {
-		dbHelper.dropAndCreate();
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		dbHelper.dropAndCreate(db);
 		SimpleEntityTable th = new SimpleEntityTable();
 		InputStream csvStream = this.getClass().getClassLoader().getResourceAsStream("assets/testDb.v0.SimpleEntity");
-		new CsvTableReader(th).importFromCsv(dbHelper, csvStream);
+		new CsvTableReader(th).importFromCsv(db, csvStream);
 		List<SimpleEntity> listAll = dao.listAll();
 		assertEquals(1, listAll.size());
 		SimpleEntity newEntity = new SimpleEntity();

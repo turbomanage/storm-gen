@@ -122,17 +122,20 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Calls a method on each TableHelper depending on the {@link UpgradeStrategy}.
+	 * In order to prevent recursive calls to getDatabase(), this method must pass
+	 * the db parameter through to any other methods that need it.
 	 *
+	 * @see https://code.google.com/p/storm-gen/issues/detail?id=11
 	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		switch (getUpgradeStrategy()) {
 		case DROP_CREATE:
-			this.dropAndCreate();
+			this.dropAndCreate(db);
 			break;
 		case BACKUP_RESTORE:
-			this.backupAndRestore();
+			this.backupAndRestore(db, this.getContext());
 			break;
 		case UPGRADE:
 			this.upgrade(db, oldVersion, newVersion);
@@ -158,37 +161,46 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 	/**
 	 * Backs up all tables to CSV, drops and recreates them, then restores
 	 * them from CSV.
+	 * @param db 
+	 * @param ctx 
 	 */
-	public void backupAndRestore() {
+	public void backupAndRestore(SQLiteDatabase db, Context ctx) {
 		for (TableHelper th : getTableHelpers()) {
-			th.backupAndRestore(this);
+			th.backupAndRestore(db, ctx);
 		}
 	}
 
 	/**
 	 * Drops and recreates all tables.
+	 * @param db 
 	 */
-	public void dropAndCreate() {
+	public void dropAndCreate(SQLiteDatabase db) {
 		for (TableHelper th : getTableHelpers()) {
-			th.dropAndCreate(this);
+			th.dropAndCreate(db);
 		}
 	}
 
 	/**
 	 * Convenience method for testing or app backups
+	 * 
+	 * @param db
+	 * @param ctx
 	 */
-	public void backupAllTablesToCsv() {
+	public void backupAllTablesToCsv(SQLiteDatabase db, Context ctx) {
 		for (TableHelper table : getTableHelpers()) {
-			table.backup(this);
+			table.backup(db, ctx);
 		}
 	}
 
 	/**
 	 * Convenience method for testing or app restores
+	 * 
+	 * @param db
+	 * @param ctx
 	 */
-	public void restoreAllTablesFromCsv() {
+	public void restoreAllTablesFromCsv(SQLiteDatabase db, Context ctx) {
 		for (TableHelper table : getTableHelpers()) {
-			table.restore(this);
+			table.restore(db, ctx);
 		}
 	}
 

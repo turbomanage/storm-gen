@@ -52,7 +52,10 @@
             <src path="src"/>
             <classpath refid="storm-api.classpath"/>
         </javac>
-        <jar destfile="storm-api.jar" basedir="bin/classes"></jar>
+        <jar destfile="storm-api.jar">
+			<fileset dir="bin/classes" />            
+            <fileset dir="src" />
+        </jar>
         <copy file="storm-api.jar" toFile="../../../storm-api-${storm.version}.jar"/>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
