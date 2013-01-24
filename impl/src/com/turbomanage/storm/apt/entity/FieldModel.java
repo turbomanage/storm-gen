@@ -32,6 +32,7 @@ package com.turbomanage.storm.apt.entity;
 
 import com.turbomanage.storm.apt.converter.ConverterModel;
 import com.turbomanage.storm.types.TypeConverter.SqlType;
+import com.turbomanage.storm.apt.entity.EntityModel;
 
 /**
  * Model of a persisted field
@@ -58,7 +59,12 @@ public class FieldModel {
 	}
 
 	public String getColName() {
-		return colName.toUpperCase();
+		// CursorAdapter requires lowercase _id col
+		if (EntityModel.ID_COL.equals(colName)) {
+			return EntityModel.ID_COL;
+		} else {
+			return colName.toUpperCase();
+		}
 	}
 	
 	void setColName(String colName) {
