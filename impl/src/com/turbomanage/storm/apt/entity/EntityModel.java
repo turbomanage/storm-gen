@@ -23,6 +23,8 @@ import com.turbomanage.storm.apt.database.DatabaseModel;
 public class EntityModel extends ClassModel {
 
 	private static final String TABLE_SUFFIX = "Table";
+	static final String DEFAULT_ID_FIELD = "id";
+	static final String ID_COL = "_id";
 	private Class<SQLiteDao> baseDaoClass;
 	private DatabaseModel dbModel;
 	private String tableName;

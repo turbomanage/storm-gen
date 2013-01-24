@@ -52,7 +52,7 @@ public class ${tableHelperName} extends TableHelper<${entityName}> {
 
 	@Override
 	public Column getIdCol() {
-		return Columns._ID;
+		return Columns._id;
 	}
 
 	@Override

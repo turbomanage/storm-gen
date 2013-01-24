@@ -39,7 +39,6 @@ import com.turbomanage.storm.exception.TypeNotSupportedException;
 
 public class EntityProcessor extends ClassProcessor {
 
-	private static final String ID_FIELD = "id";
 	private static final String TAG = EntityProcessor.class.getName();
 	private EntityModel entityModel;
 
@@ -159,7 +158,7 @@ public class EntityProcessor extends ClassProcessor {
 			// Default to field named "id"
 			List<FieldModel> fields = entityModel.getFields();
 			for (FieldModel f : fields) {
-				if (ID_FIELD.equals(f.getFieldName())) {
+				if (EntityModel.DEFAULT_ID_FIELD.equals(f.getFieldName())) {
 					entityModel.setIdField(f);
 				}
 			}
