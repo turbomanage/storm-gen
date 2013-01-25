@@ -52,7 +52,11 @@ public abstract class SQLiteDao<T> {
 	/**
 	 * Constructor requires the {@link Context}, which you typically
 	 * obtain by calling {@link Activity#getApplicationContext()} in
-	 * your Activity.
+	 * your Activity. The DAO maintains no database state, but rather
+	 * only the {@link Context} to initialize the database if needed.
+	 * It is safe to construct multiple instances of the DAO since all
+	 * database access occurs a singleton instance of {@link SQLiteOpenHelper}
+	 * provided by your generated {@link DatabaseFactory}.
 	 *
 	 * @param ctx Context
 	 */
