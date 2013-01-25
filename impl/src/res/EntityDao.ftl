@@ -14,15 +14,20 @@ import ${import};
  */
 public class ${daoName} extends ${baseDaoName}<${entityName}>{
 
+    @Override
 	public DatabaseHelper getDbHelper(Context ctx) {
 		return ${dbFactory}.getDatabaseHelper(ctx);
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public TableHelper getTableHelper() {
 		return new ${tableHelperClass}();
 	}
 
+	/**
+	 * @see SQLiteDao#SQLiteDao(Context)
+	 */
 	public ${daoName}(Context ctx) {
 		super(ctx);
 	}
