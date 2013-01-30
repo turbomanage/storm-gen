@@ -135,7 +135,7 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 			this.dropAndCreate(db);
 			break;
 		case BACKUP_RESTORE:
-			this.backupAndRestore(db, this.getContext());
+			this.backupAndRestore(this.getContext(), db);
 			break;
 		case UPGRADE:
 			this.upgrade(db, oldVersion, newVersion);
@@ -161,10 +161,10 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 	/**
 	 * Backs up all tables to CSV, drops and recreates them, then restores
 	 * them from CSV.
-	 * @param db 
 	 * @param ctx 
+	 * @param db 
 	 */
-	public void backupAndRestore(SQLiteDatabase db, Context ctx) {
+	public void backupAndRestore(Context ctx, SQLiteDatabase db) {
 		for (TableHelper th : getTableHelpers()) {
 			th.backupAndRestore(db, ctx);
 		}
@@ -182,11 +182,10 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Convenience method for testing or app backups
-	 * 
-	 * @param db
 	 * @param ctx
+	 * @param db
 	 */
-	public void backupAllTablesToCsv(SQLiteDatabase db, Context ctx) {
+	public void backupAllTablesToCsv(Context ctx, SQLiteDatabase db) {
 		for (TableHelper table : getTableHelpers()) {
 			table.backup(db, ctx);
 		}
@@ -194,11 +193,10 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Convenience method for testing or app restores
-	 * 
-	 * @param db
 	 * @param ctx
+	 * @param db
 	 */
-	public void restoreAllTablesFromCsv(SQLiteDatabase db, Context ctx) {
+	public void restoreAllTablesFromCsv(Context ctx, SQLiteDatabase db) {
 		for (TableHelper table : getTableHelpers()) {
 			table.restore(db, ctx);
 		}
