@@ -17,6 +17,7 @@ package com.turbomanage.storm.test;
 
 import java.util.Random;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
@@ -39,6 +40,7 @@ import com.turbomanage.storm.entity.dao.SimpleEntityDao;
  *  
  * @author David M. Chandler
  */
+@SuppressLint("NewApi")
 public class CursorAdapterTest extends AndroidTestCase {
 	private Context ctx;
 	private SimpleEntityDao dao;
@@ -54,7 +56,6 @@ public class CursorAdapterTest extends AndroidTestCase {
 	/**
 	 * This will fail if there is no column named "id"
 	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void testCursorAdapter() {
 		insertRandomEntities(100);
 		Cursor c = dao.query(null, null);
