@@ -160,14 +160,19 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Backs up all tables to CSV, drops and recreates them, then restores
-	 * them from CSV.
+	 * them from CSV. By default, creates CSV filenames with no suffix. You
+	 * could override this method to supply a timestamp suffix (make sure it's
+	 * the same for both backup and restore), but beware that this could
+	 * cause backup files to proliferate. Ideally, this method should
+	 * clean up backup files after the database has been restored.
+	 * 
 	 * @param ctx 
 	 * @param db 
 	 */
 	public void backupAndRestore(Context ctx, SQLiteDatabase db) {
-		for (TableHelper th : getTableHelpers()) {
-			th.backupAndRestore(db, ctx);
-		}
+		backupAllTablesToCsv(ctx, db, null);
+		dropAndCreate(db);
+		restoreAllTablesFromCsv(ctx, db, null);
 	}
 
 	/**
@@ -181,24 +186,28 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Convenience method for testing or app backups
+	 * Backup all tables to CSV files, one per table
+	 * 
 	 * @param ctx
 	 * @param db
+	 * @param suffix Optional filename suffix, none if null
 	 */
-	public void backupAllTablesToCsv(Context ctx, SQLiteDatabase db) {
+	public void backupAllTablesToCsv(Context ctx, SQLiteDatabase db, String suffix) {
 		for (TableHelper table : getTableHelpers()) {
-			table.backup(db, ctx);
+			table.backup(db, ctx, suffix);
 		}
 	}
 
 	/**
-	 * Convenience method for testing or app restores
+	 * Restore all tables from CSV files, one per table
+	 * 
 	 * @param ctx
 	 * @param db
+	 * @param suffix Optional filename suffix, none if null
 	 */
-	public void restoreAllTablesFromCsv(Context ctx, SQLiteDatabase db) {
+	public void restoreAllTablesFromCsv(Context ctx, SQLiteDatabase db, String suffix) {
 		for (TableHelper table : getTableHelpers()) {
-			table.restore(db, ctx);
+			table.restore(db, ctx, suffix);
 		}
 	}
 

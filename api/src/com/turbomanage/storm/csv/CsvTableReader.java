@@ -55,23 +55,25 @@ public class CsvTableReader {
 		this.th = tableHelper;
 	}
 
-	protected String getCsvFilename(String dbPath, int dbVersion) {
+	protected String getCsvFilename(String dbPath, int dbVersion, String suffix) {
 		String[] path = dbPath.split("/");
 		String dbName = path[path.length-1];
 		String tableName = th.getTableName();
-		return String.format("%s.v%d.%s", dbName, dbVersion, tableName);
+		return String.format("%s.v%d.%s%s", dbName, dbVersion, tableName, suffix);
 	}
 
 	/**
-	 * Attempts to import a database table from a CSV
-	 * file in the default location.
-	 *
-	 * @param db
+	 * Attempts to import a database table from a CSV file in the default
+	 * location.
+	 * 
 	 * @param ctx
+	 * @param db
+	 * @param suffix
+	 * 
 	 * @return count of rows imported or -1 if error
 	 */
-	public int importFromCsv(SQLiteDatabase db, Context ctx) {
-		String filename = getCsvFilename(db.getPath(), db.getVersion());
+	public int importFromCsv(Context ctx, SQLiteDatabase db, String suffix) {
+		String filename = getCsvFilename(db.getPath(), db.getVersion(), suffix);
 		FileInputStream fileInputStream;
 		try {
 			fileInputStream = ctx.openFileInput(filename);
