@@ -68,14 +68,16 @@ public class CsvTableWriter extends CsvTableReader {
 	/**
 	 * Dumps a database table to a CSV file in the default location.
 	 * Returns the number of rows written to the file.
-	 *
-	 * @param db
+	 * 
 	 * @param ctx
+	 * @param db
+	 * @param suffix 
+	 *
 	 * @return count of rows in the exported file
 	 */
-	public int dumpToCsv(SQLiteDatabase db, Context ctx) {
+	public int dumpToCsv(Context ctx, SQLiteDatabase db, String suffix) {
 		int numRowsWritten = 0;
-		String filename = getCsvFilename(db.getPath(), db.getVersion());
+		String filename = getCsvFilename(db.getPath(), db.getVersion(), suffix);
 		Cursor c = db.query(th.getTableName(), null, null, null, null, null, null);
 		FileOutputStream fos;
 		try {

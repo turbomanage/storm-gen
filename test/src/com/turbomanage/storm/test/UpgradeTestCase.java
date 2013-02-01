@@ -75,10 +75,10 @@ public class UpgradeTestCase extends AndroidTestCase {
 		dao.insert(e);
 		List<SimpleEntity> before = dao.listAll();
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
-		dbHelper.backupAllTablesToCsv(ctx, db);
+		dbHelper.backupAllTablesToCsv(ctx, db, null);
 		dbHelper.dropAndCreate(db);
 		assertEquals(0, dao.listAll().size());
-		dbHelper.restoreAllTablesFromCsv(ctx, db);
+		dbHelper.restoreAllTablesFromCsv(ctx, db, null);
 		List<SimpleEntity> after = dao.listAll();
 		for (int i = 0; i < before.size(); i++) {
 			DaoTestCase.assertAllFieldsMatch(before.get(i), after.get(i));
@@ -96,8 +96,9 @@ public class UpgradeTestCase extends AndroidTestCase {
 		SimpleEntity populatedEntity = newTestEntity();
 		dao.insert(populatedEntity);
 		dao.insert(new SimpleEntity()); // default
-		dbHelper.backupAllTablesToCsv(ctx, db);
-		FileInputStream ois = ctx.openFileInput("testDb.v2.SimpleEntity");
+		String timestamp = "." + System.currentTimeMillis();
+		dbHelper.backupAllTablesToCsv(ctx, db, timestamp);
+		FileInputStream ois = ctx.openFileInput("testDb.v2.SimpleEntity" + timestamp);
 		InputStreamReader isr = new InputStreamReader(ois);
 		BufferedReader reader = new BufferedReader(isr);
 		reader.readLine(); // header row

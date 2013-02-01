@@ -189,25 +189,14 @@ public abstract class TableHelper<T> {
 	}
 
 	/**
-	 * Backs up the current table and restores into the new schema.
-	 *
-	 * @param db
-	 * @param ctx
-	 */
-	public void backupAndRestore(SQLiteDatabase db, Context ctx) {
-		this.backup(db, ctx);
-		this.dropAndCreate(db);
-		this.restore(db, ctx);
-	}
-
-	/**
 	 * Backs up the current table to a CSV file.
 	 *
 	 * @param db
 	 * @param ctx
+	 * @param suffix 
 	 */
-	public void backup(SQLiteDatabase db, Context ctx) {
-		new CsvTableWriter(this).dumpToCsv(db, ctx);
+	public void backup(SQLiteDatabase db, Context ctx, String suffix) {
+		new CsvTableWriter(this).dumpToCsv(ctx, db, suffix);
 	}
 
 	/**
@@ -215,9 +204,10 @@ public abstract class TableHelper<T> {
 	 *
 	 * @param db
 	 * @param ctx
+	 * @param suffix
 	 */
-	public void restore(SQLiteDatabase db, Context ctx) {
-		new CsvTableReader(this).importFromCsv(db, ctx);
+	public void restore(SQLiteDatabase db, Context ctx, String suffix) {
+		new CsvTableReader(this).importFromCsv(ctx, db, suffix);
 	}
 
 	/**
