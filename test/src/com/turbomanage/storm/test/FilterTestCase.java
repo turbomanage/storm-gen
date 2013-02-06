@@ -55,7 +55,7 @@ public class FilterTestCase extends AndroidTestCase {
 	private long insertTestEntity() {
 		SimpleEntity e = new SimpleEntity();
 		e.setBlobField(BLOB_VALUE);
-		e.setBooleanField(true);
+		e.setBooleanField(BOOLEAN_VALUE);
 		e.setByteField(BYTE_VALUE);
 		e.setCharField(CHAR_VALUE);
 		e.setDoubleField(DOUBLE_VALUE);
@@ -128,5 +128,5 @@ public class FilterTestCase extends AndroidTestCase {
 		SimpleEntity result = dao.filter().eq(Columns.SHORTFIELD, (short) SHORT_VALUE).get();
 		assertEquals(SHORT_VALUE, result.getShortField());
 	}
-
+	
 }
