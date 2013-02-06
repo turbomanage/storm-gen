@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.turbomanage.storm.apt.converter.ConverterModel;
 import com.turbomanage.storm.apt.entity.FieldModel;
+import com.turbomanage.storm.types.EnumConverter;
 
 public abstract class ClassModel {
 
@@ -39,17 +40,17 @@ public abstract class ClassModel {
 	public void addField(FieldModel field) {
 		fields.add(field);
 		if (field.isEnum()) {
-			return;
+			addImport(EnumConverter.class.getCanonicalName());
 		}
 		// add import for converter if needed
 		String converterType = field.getQualifiedConverterClass();
-		if (!imports.contains(converterType)) {
-			imports.add(converterType);
-		}
+		addImport(converterType);
 	}
 
 	public void addImport(String importPath) {
-		imports.add(importPath);
+		if (!imports.contains(importPath)) {
+			imports.add(importPath);
+		}
 	}
 
 	/**
