@@ -91,7 +91,9 @@ public class ProcessorLogger {
     public String formatErrorMessage(String msg, Exception ex) {
 		StringWriter sw = new StringWriter();
 		PrintWriter out = new PrintWriter(sw);
-		ex.printStackTrace(out);
+		if (ex != null) {
+			ex.printStackTrace(out);
+		}
 		return msg + ": " + sw.toString();
     }
 
