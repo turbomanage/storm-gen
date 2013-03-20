@@ -53,19 +53,23 @@ public class EntityProcessor extends ClassProcessor {
 
 	@Override
 	public void populateModel() {
+		// TODO make more elegant
 		Entity entity = this.typeElement.getAnnotation(Entity.class);
-		this.entityModel = new EntityModel();
+		if (entity != null) {
+			this.entityModel = new EntityModel(entity);
+		} else {
+			javax.persistence.Entity jpaEntity = this.typeElement.getAnnotation(javax.persistence.Entity.class);
+			if (jpaEntity != null) {
+				this.entityModel = new EntityModel(jpaEntity);
+			}
+		}
 		super.populateModel();
 		this.entityModel.addImport(getQualifiedClassName());
-		parseEntity(entity);
+		validateTableName(entityModel.getTableName());
+		chooseDatabase(entityModel.getDbName());
 		chooseBaseDao(entity);
-		chooseDatabase(entity);
 		readFields(typeElement);
 		inspectId();
-	}
-
-	private void parseEntity(Entity entity) {
-		validateTableName(entity.tableName());
 	}
 
 	private void validateTableName(String tableName) {
@@ -85,11 +89,10 @@ public class EntityProcessor extends ClassProcessor {
 		this.entityModel.setBaseDaoClass(SQLiteDao.class);
 	}
 
-	protected void chooseDatabase(Entity entity) {
+	protected void chooseDatabase(String dbName) {
 		DatabaseModel defaultDb = stormEnv.getDefaultDb();
-		if (entity.dbName().length() > 0) {
+		if (dbName != null &&  dbName.length() > 0) {
 			// Add db to entity model and vice versa
-			String dbName = entity.dbName();
 			DatabaseModel db = stormEnv.getDbByName(dbName);
 			if (db != null) {
 				this.entityModel.setDatabase(db);

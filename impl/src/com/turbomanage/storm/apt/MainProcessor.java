@@ -16,6 +16,8 @@
 package com.turbomanage.storm.apt;
 
 import java.io.Writer;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -43,7 +45,7 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
-@SupportedAnnotationTypes({ "com.turbomanage.storm.api.Database","com.turbomanage.storm.api.Entity","com.turbomanage.storm.api.Converter" })
+@SupportedAnnotationTypes({ "com.turbomanage.storm.api.Database","com.turbomanage.storm.api.Entity","javax.persistence.Entity","com.turbomanage.storm.api.Converter" })
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class MainProcessor extends AbstractProcessor {
 	private ProcessorLogger logger;
@@ -99,8 +101,11 @@ public class MainProcessor extends AbstractProcessor {
 				return true;
 			}
 		}
-
-		for (Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
+		
+		Set<TypeElement> entities = new HashSet<TypeElement>();
+		entities.addAll((Collection<? extends TypeElement>) roundEnv.getElementsAnnotatedWith(Entity.class));
+		entities.addAll((Collection<? extends TypeElement>) roundEnv.getElementsAnnotatedWith(javax.persistence.Entity.class));
+		for (Element element : entities) {
 			try {
 				ClassProcessor eproc = new EntityProcessor(element, stormEnv);
 				eproc.populateModel();
@@ -118,7 +123,7 @@ public class MainProcessor extends AbstractProcessor {
 				return true;
 			}
 		}
-
+		
 		// Second pass to generate DatabaseFactory templates now that
 		// all entities have been associated with a db
 		for (DatabaseModel dbModel : stormEnv.getDbModels()) {
