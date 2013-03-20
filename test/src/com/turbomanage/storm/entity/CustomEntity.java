@@ -3,7 +3,7 @@ package com.turbomanage.storm.entity;
 import com.turbomanage.storm.api.Entity;
 import com.turbomanage.storm.api.Id;
 
-@Entity(tableName="[order]")
+@Entity(name="[order]")
 public class CustomEntity {
 	
 	private long id;

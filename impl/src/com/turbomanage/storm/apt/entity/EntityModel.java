@@ -16,6 +16,7 @@
 package com.turbomanage.storm.apt.entity;
 
 import com.turbomanage.storm.SQLiteDao;
+import com.turbomanage.storm.api.Entity;
 import com.turbomanage.storm.apt.ClassModel;
 import com.turbomanage.storm.apt.database.DatabaseModel;
 
@@ -27,7 +28,17 @@ public class EntityModel extends ClassModel {
 	static final String ID_COL = "_id";
 	private Class<SQLiteDao> baseDaoClass;
 	private DatabaseModel dbModel;
+	private String dbName;
 	private String tableName;
+
+	public EntityModel(Entity entity) {
+		this.setTableName(entity.name());
+		this.setDbName(entity.dbName());
+	}
+	
+	public EntityModel(javax.persistence.Entity entity) {
+		this.setTableName(entity.name());
+	}
 
 	public String getEntityName() {
 		return this.getClassName();
@@ -98,6 +109,14 @@ public class EntityModel extends ClassModel {
 		idField.setEntityId(true);
 		// TODO use a view instead
 		idField.setColName("_id");
+	}
+
+	public String getDbName() {
+		return dbName;
+	}
+
+	public void setDbName(String dbName) {
+		this.dbName = dbName;
 	}
 
 }
