@@ -5,7 +5,6 @@ Bundle-SymbolicName: storm-impl;singleton:=true
 Bundle-Version: 1.0.0.0
 Bundle-ClassPath: storm-impl.jar,
  lib/freemarker-2.3.6.jar,
- lib/storm-api.jar,
  lib/persistence-api-1.0.jar
 Export-Package: com.turbomanage.storm.apt,
  com.turbomanage.storm.apt.converter,
