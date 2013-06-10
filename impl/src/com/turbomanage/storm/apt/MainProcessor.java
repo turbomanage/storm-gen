@@ -101,10 +101,13 @@ public class MainProcessor extends AbstractProcessor {
 				return true;
 			}
 		}
-		
 		Set<TypeElement> entities = new HashSet<TypeElement>();
-		entities.addAll((Collection<? extends TypeElement>) roundEnv.getElementsAnnotatedWith(Entity.class));
-		entities.addAll((Collection<? extends TypeElement>) roundEnv.getElementsAnnotatedWith(javax.persistence.Entity.class));
+		try {
+			entities.addAll((Collection<? extends TypeElement>) roundEnv.getElementsAnnotatedWith(Entity.class));
+			entities.addAll((Collection<? extends TypeElement>) roundEnv.getElementsAnnotatedWith(javax.persistence.Entity.class));
+		} catch (Exception e) {
+			// swallow: apt bug in RoundEnvImpl if there are no annotations present
+		}
 		for (Element element : entities) {
 			try {
 				ClassProcessor eproc = new EntityProcessor(element, stormEnv);

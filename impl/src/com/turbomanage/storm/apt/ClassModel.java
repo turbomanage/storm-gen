@@ -18,7 +18,6 @@ package com.turbomanage.storm.apt;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.turbomanage.storm.apt.converter.ConverterModel;
 import com.turbomanage.storm.apt.entity.FieldModel;
 import com.turbomanage.storm.types.EnumConverter;
 

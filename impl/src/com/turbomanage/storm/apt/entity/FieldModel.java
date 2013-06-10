@@ -32,7 +32,6 @@ package com.turbomanage.storm.apt.entity;
 
 import com.turbomanage.storm.apt.converter.ConverterModel;
 import com.turbomanage.storm.types.TypeConverter.SqlType;
-import com.turbomanage.storm.apt.entity.EntityModel;
 
 /**
  * Model of a persisted field
