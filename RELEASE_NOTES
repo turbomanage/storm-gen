@@ -1,0 +1,7 @@
+Version 0.95
+
+* Fixed issue 33. Persistence-api jar no longer required.
+
+Version 0.96
+
+* Fixed issue 34. Adding new table when upgrading database now works.
