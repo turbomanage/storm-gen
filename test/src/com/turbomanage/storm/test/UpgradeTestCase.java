@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
@@ -85,6 +87,24 @@ public class UpgradeTestCase extends AndroidTestCase {
 		}
 	}
 
+	/**
+	 * This test exercises the same code as {@link CsvTableWriter#dumpToCsv}.
+	 * When upgrading the db version, any new table will throw this exception.
+	 * The test ensures that the exception will get caught and is mainly
+	 * here for future-proofing.
+	 */
+	public void testBackupMissingTableThrows() {
+		try {
+			SQLiteDatabase db = dbHelper.getReadableDatabase();
+			Cursor c = db.query("bogus_table", null, null, null, null, null, null);
+			fail();
+		} catch (SQLException e) {
+			assertTrue(e.getMessage().contains("no such table"));
+		}
+	}
+
+	// TODO need testFailedBackupAborts()
+	
 	/**
 	 * Verify that all columns are correctly escaped and converted to Strings.
 	 *

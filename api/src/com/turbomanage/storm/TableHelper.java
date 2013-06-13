@@ -15,11 +15,15 @@
  ******************************************************************************/
 package com.turbomanage.storm;
 
+import java.io.FileNotFoundException;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils.InsertHelper;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.turbomanage.storm.csv.CsvTableReader;
 import com.turbomanage.storm.csv.CsvTableWriter;
@@ -47,7 +51,7 @@ public abstract class TableHelper<T> {
 	public interface Column{};
 
 	private static final String TAG = TableHelper.class.getName();
-
+	
 	/**
 	 * @return array of column names in declared order
 	 */
@@ -194,9 +198,21 @@ public abstract class TableHelper<T> {
 	 * @param db
 	 * @param ctx
 	 * @param suffix 
+	 * 
+	 * @return true on success
 	 */
-	public void backup(SQLiteDatabase db, Context ctx, String suffix) {
-		new CsvTableWriter(this).dumpToCsv(ctx, db, suffix);
+	public boolean backup(SQLiteDatabase db, Context ctx, String suffix) {
+		try {
+			new CsvTableWriter(this).dumpToCsv(ctx, db, suffix);
+		} catch (SQLException e) {
+			if (e.getMessage().contains("no such table")) {
+				Log.w(TAG, "Table " + this.getTableName() + " doesn't exist. This is expected if the table is new in this db version.");
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
