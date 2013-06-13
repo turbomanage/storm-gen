@@ -23,7 +23,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.turbomanage.storm.DatabaseHelper;
 import com.turbomanage.storm.TableHelper;
 
 /**
@@ -75,29 +74,25 @@ public class CsvTableWriter extends CsvTableReader {
 	 *
 	 * @return count of rows in the exported file
 	 */
-	public int dumpToCsv(Context ctx, SQLiteDatabase db, String suffix) {
+	public int dumpToCsv(Context ctx, SQLiteDatabase db, String suffix) throws FileNotFoundException {
 		int numRowsWritten = 0;
+		Cursor c;
 		String filename = getCsvFilename(db.getPath(), db.getVersion(), suffix);
-		Cursor c = db.query(th.getTableName(), null, null, null, null, null, null);
+		c = db.query(th.getTableName(), null, null, null, null, null, null);
 		FileOutputStream fos;
-		try {
-			fos = ctx.openFileOutput(filename, 0);
-			PrintWriter printWriter = new PrintWriter(fos);
-			String headerRow = buildHeaderRow(c);
-			printWriter.println(headerRow);
-			for (boolean hasItem = c.moveToFirst(); hasItem; hasItem = c
-					.moveToNext()) {
-				String csv = buildCsvRow(c);
-				printWriter.println(csv);
-				numRowsWritten++;
-			}
-			printWriter.flush();
-			printWriter.close();
-			return numRowsWritten;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return -1;
+		fos = ctx.openFileOutput(filename, 0);
+		PrintWriter printWriter = new PrintWriter(fos);
+		String headerRow = buildHeaderRow(c);
+		printWriter.println(headerRow);
+		for (boolean hasItem = c.moveToFirst(); hasItem; hasItem = c
+				.moveToNext()) {
+			String csv = buildCsvRow(c);
+			printWriter.println(csv);
+			numRowsWritten++;
 		}
+		printWriter.flush();
+		printWriter.close();
+		return numRowsWritten;
 	}
 
 }

@@ -170,9 +170,12 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 	 * @param db 
 	 */
 	public void backupAndRestore(Context ctx, SQLiteDatabase db) {
-		backupAllTablesToCsv(ctx, db, null);
-		dropAndCreate(db);
-		restoreAllTablesFromCsv(ctx, db, null);
+		if (backupAllTablesToCsv(ctx, db, null)) {
+			dropAndCreate(db);
+			restoreAllTablesFromCsv(ctx, db, null);
+		} else {
+			throw new RuntimeException("Backup of " + getDatabaseName() + " failed, aborting upgrade");
+		}
 	}
 
 	/**
@@ -191,11 +194,15 @@ public abstract class DatabaseHelper extends SQLiteOpenHelper {
 	 * @param ctx
 	 * @param db
 	 * @param suffix Optional filename suffix, none if null
+	 * 
+	 * @return True if all tables completed without errors
 	 */
-	public void backupAllTablesToCsv(Context ctx, SQLiteDatabase db, String suffix) {
+	public boolean backupAllTablesToCsv(Context ctx, SQLiteDatabase db, String suffix) {
+		boolean allSucceeded = true;
 		for (TableHelper table : getTableHelpers()) {
-			table.backup(db, ctx, suffix);
+			allSucceeded &= table.backup(db, ctx, suffix);
 		}
+		return allSucceeded;
 	}
 
 	/**

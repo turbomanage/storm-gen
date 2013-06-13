@@ -70,6 +70,7 @@ public class EntityProcessor extends ClassProcessor {
 		chooseBaseDao(entity);
 		readFields(typeElement);
 		inspectId();
+		// TODO Verify >1 column. If only ID col, insert() will fail
 	}
 
 	private void validateTableName(String tableName) {
