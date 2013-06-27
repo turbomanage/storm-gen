@@ -77,12 +77,14 @@ public class ${tableHelperName} extends TableHelper<${entityName}> {
 
 	@Override
 	public String[] getRowValues(Cursor c) {
-		String[] values = new String[c.getColumnCount()];
+		String[] values = new String[this.getColumns().length];
+		String[] defaultValues = getDefaultValues();
+		int colIdx; // entity field's position in the cursor
 		<#list fields as field>
 		<#if field.enum>
-		values[${field_index}] = c.isNull(${field_index}) ? null : c.getString(${field_index});
+		colIdx = c.getColumnIndex("${field.colName}"); values[${field_index}] = (colIdx < 0) ? defaultValues[${field_index}] : getStringOrNull(c, colIdx);
 		<#else>
-		values[${field_index}] = ${field.converterName}.GET.toString(get${field.bindType}OrNull(c, ${field_index}));
+		colIdx = c.getColumnIndex("${field.colName}"); values[${field_index}] = (colIdx < 0) ? defaultValues[${field_index}] : ${field.converterName}.GET.toString(get${field.bindType}OrNull(c, colIdx));
 		</#if>
 		</#list>
 		return values;

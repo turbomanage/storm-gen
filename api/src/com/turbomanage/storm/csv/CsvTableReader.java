@@ -107,6 +107,7 @@ public class CsvTableReader {
 			defaultValues = th.getDefaultValues();
 			String csvRow = reader.readLine();
 			while (csvRow != null) {
+//				Log.d(CsvTableReader.class.getName(), "Row " + numInserts + ": " + csvRow);
 				long rowId = parseAndInsertRow(csvRow);
 				if (rowId < 0) {
 					throw new RuntimeException("Error after row " + numInserts);
@@ -133,6 +134,7 @@ public class CsvTableReader {
 	 * @return
 	 */
 	private String[] mapValuesToTable(List<String> textValues) {
+		// TODO Eliminate this method since CsvWriter now orders?
 		String[] rowValues = defaultValues.clone();
 		for (int i=0; i < rowValues.length; i++) {
 			int csvPos = colMap[i];

@@ -85,7 +85,12 @@ public class DatabaseModel extends ClassModel {
 	public void addEntity(EntityModel daoModel) {
 		this.entities.add(daoModel);
 		// Duplicate TableHelper info for use by index writer
-		this.tableHelpers.add(daoModel.getTableHelperClass());
+		String thClassName = daoModel.getTableHelperClass();
+		if (!this.tableHelpers.contains(thClassName)) {
+			// Skip it if it's already in the list
+			// TODO use a Set instead?
+			this.tableHelpers.add(daoModel.getTableHelperClass());
+		}
 	}
 
 	public String[] getTableHelpers() {

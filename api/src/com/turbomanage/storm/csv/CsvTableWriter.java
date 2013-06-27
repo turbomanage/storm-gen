@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.turbomanage.storm.TableHelper;
+import com.turbomanage.storm.TableHelper.Column;
 
 /**
  * Contains methods used to dump a table to a CSV file. Each
@@ -45,21 +46,20 @@ public class CsvTableWriter extends CsvTableReader {
 	private String buildCsvRow(Cursor c) {
 		StringBuilder sb = new StringBuilder();
 		String[] values = th.getRowValues(c);
-		for (int i = 0; i < c.getColumnCount(); i++) {
-			String value = values[i];
+		for (String val : values) {
 			sb.append(',');
-			sb.append(CsvUtils.escapeCsv(value));
+			sb.append(CsvUtils.escapeCsv(val));
 		}
 		return sb.toString().substring(1);
 	}
 
-	private String buildHeaderRow(Cursor c) {
+	private String buildHeaderRow() {
 		// Write column names in first row
 		StringBuilder sb = new StringBuilder();
-		String[] cols = c.getColumnNames();
-		for (String colName : cols) {
+		Column[] cols = th.getColumns();
+		for (Column col : cols) {
 			sb.append(',');
-			sb.append(colName);
+			sb.append(col.toString());
 		}
 		return sb.toString().substring(1);
 	}
@@ -82,7 +82,7 @@ public class CsvTableWriter extends CsvTableReader {
 		FileOutputStream fos;
 		fos = ctx.openFileOutput(filename, 0);
 		PrintWriter printWriter = new PrintWriter(fos);
-		String headerRow = buildHeaderRow(c);
+		String headerRow = buildHeaderRow();
 		printWriter.println(headerRow);
 		for (boolean hasItem = c.moveToFirst(); hasItem; hasItem = c
 				.moveToNext()) {
