@@ -72,6 +72,7 @@ public class UpgradeTestCase extends AndroidTestCase {
 	}
 
 	public void testBackupAndRestore() throws IOException {
+		dao.deleteAll();
 		persistRandomEntities(11);
 		SimpleEntity e = newTestEntity();
 		dao.insert(e);

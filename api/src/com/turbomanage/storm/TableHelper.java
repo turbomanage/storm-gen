@@ -101,9 +101,12 @@ public abstract class TableHelper<T> {
 	protected abstract String upgradeSql(int oldVersion, int newVersion);
 
 	/**
-	 * Extract from a cursor a map containing each column name and value as a
-	 * String. This is used by the CsvWriter and is necessary mainly because
+	 * Extract from a cursor an array of String values in order of the Columns
+	 * enum. Note that column order is not guaranteed when adding or removing
+	 * entity fields, so these values are not necessarily in cursor order. 
+	 * This is used by the CsvWriter and is necessary mainly because
 	 * Cursor.getString truncates doubles and blobs need to be Base64 encoded.
+	 * Writes columns in order of the Columns enum, not their cursor position.
 	 *
 	 * @param c Cursor
 	 * @return Map<String colName, String colValue>
