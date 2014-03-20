@@ -48,7 +48,10 @@ public abstract class TableHelper<T> {
 	 *
 	 * @author David M. Chandler
 	 */
-	public interface Column{};
+	public interface Column{
+		public abstract String asc();
+		public abstract String desc();
+	};
 
 	private static final String TAG = TableHelper.class.getName();
 	

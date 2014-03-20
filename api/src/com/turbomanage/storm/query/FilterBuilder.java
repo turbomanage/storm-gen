@@ -42,6 +42,7 @@ public class FilterBuilder<T> {
 	private static final String TAG = FilterBuilder.class.getName();
 	private SQLiteDao<T> dao;
 	private List<Predicate> where = new ArrayList<Predicate>();
+	protected String orderBy;
 
 	/**
 	 * Constructor requires the {@link SQLiteDao} that will be
@@ -120,7 +121,7 @@ public class FilterBuilder<T> {
 	 * @return Cursor result
 	 */
 	public Cursor exec() {
-		return dao.query(where(), params());
+		return dao.query(where(), params(), orderBy);
 	}
 
 	/**
@@ -144,6 +145,19 @@ public class FilterBuilder<T> {
 		return dao.asList(this.exec());
 	}
 
+	public FilterBuilder order(String...columns) {
+		if (columns.length < 1) {
+			throw new IllegalArgumentException();
+		}
+		StringBuilder orderBy = new StringBuilder(columns[0]);
+		for (int i = 1; i < columns.length; i++) {
+			String col = columns[i];
+			orderBy.append(", " + col);
+		}
+		this.orderBy = orderBy.toString();
+		return this;
+	}
+	
 	/**
 	 * Convert the params in each predicate to String[]
 	 * used by the query methods
@@ -166,6 +180,9 @@ public class FilterBuilder<T> {
 	 * @return String SQL WHERE clause
 	 */
 	private String where() {
+		if (where.size() < 1) {
+			return null;
+		}
 		StringBuilder sqlWhere = new StringBuilder();
 		for (Predicate p : where) {
 			sqlWhere.append(" AND ");
