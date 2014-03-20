@@ -27,7 +27,13 @@ public class ${tableHelperName} extends TableHelper<${entityName}> {
 	public enum Columns implements TableHelper.Column {
 		<#list fields as field>
 		${field.colName}<#if field_has_next>,</#if>
-		</#list>
+		</#list>;
+		public String asc() {
+			return this.name() + " ASC";
+		}
+		public String desc() {
+			return this.name() + " DESC";
+		}
 	}
 
 	@Override

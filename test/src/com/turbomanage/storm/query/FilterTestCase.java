@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.turbomanage.storm.test;
+package com.turbomanage.storm.query;
+
+import java.util.List;
 
 import android.content.Context;
 import android.test.AndroidTestCase;
 
 import com.turbomanage.storm.entity.SimpleEntity;
 import com.turbomanage.storm.entity.SimpleEntity.EnumType;
+import com.turbomanage.storm.entity.ValueEntity;
 import com.turbomanage.storm.entity.dao.SimpleEntityDao;
+import com.turbomanage.storm.entity.dao.SimpleEntityTable;
 import com.turbomanage.storm.entity.dao.SimpleEntityTable.Columns;
+import com.turbomanage.storm.entity.dao.ValueEntityDao;
 
 public class FilterTestCase extends AndroidTestCase {
 
@@ -67,6 +72,48 @@ public class FilterTestCase extends AndroidTestCase {
 		return dao.insert(e);
 	}
 
+	public void testBuildOrderBy() {
+		// Verify that ASC and DESC methods exist
+		assertEquals("BLOBFIELD ASC", SimpleEntityTable.Columns.BLOBFIELD.asc());
+		assertEquals("BLOBFIELD DESC", SimpleEntityTable.Columns.BLOBFIELD.desc());
+		SimpleEntityDao dao = new SimpleEntityDao(ctx);
+		try {
+			dao.filter().order();
+			fail("order() with no arguments should throw IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// test passes
+		}
+		FilterBuilder<SimpleEntity> fb = dao.filter().order(Columns.BLOBFIELD.asc());
+		assertEquals("BLOBFIELD ASC", fb.orderBy);
+		fb = dao.filter().order(Columns.BLOBFIELD.asc(), Columns.DOUBLEFIELD.desc());
+		assertEquals("BLOBFIELD ASC, DOUBLEFIELD DESC", fb.orderBy);
+	}
+	
+	public void testBuildWhere() {
+		// Verify that no predicates returns null
+	}
+	
+	public void testOrder() {
+		ValueEntity val1 = new ValueEntity(21);
+		ValueEntity val2 = new ValueEntity(34);
+		ValueEntity val3 = new ValueEntity(13);
+		ValueEntity val4 = new ValueEntity(5);
+		ValueEntity val5 = new ValueEntity(8);
+		ValueEntityDao valueDao = new ValueEntityDao(ctx);
+		valueDao.insert(val1);
+		valueDao.insert(val2);
+		valueDao.insert(val3);
+		valueDao.insert(val4);
+		valueDao.insert(val5);
+		List<ValueEntity> sortedValues = valueDao.filter().order(com.turbomanage.storm.entity.dao.ValueEntityTable.Columns.INTVALUE.desc()).list();
+		assertTrue(sortedValues.size() == 5);
+		int previous = sortedValues.get(0).getIntValue();
+		for (int i = 1; i < sortedValues.size(); i++) {
+			int val = sortedValues.get(i).getIntValue();
+			assertTrue (val <= previous);
+		}
+	}
+	
 	public void testQueryByBlob() {
 		try {
 			dao.filter().eq(Columns.BLOBFIELD, BLOB_VALUE);

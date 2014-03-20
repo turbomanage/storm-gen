@@ -241,7 +241,22 @@ public abstract class SQLiteDao<T> {
 	 * @return Cursor
 	 */
 	public Cursor query(String where, String[] params) {
-		return getReadableDb().query(th.getTableName(), null, where, params, null, null, null);
+		return query(where, params, null);
+	}
+
+	/**
+	 * Convenience method queries the entity table using the provided
+	 * WHERE clause and parameters and returns a {@link Cursor}.
+	 *
+	 * The calling method MUST close the Cursor!
+	 *
+	 * @param where
+	 * @param params
+	 * @param orderBy
+	 * @return
+	 */
+	public Cursor query(String where, String[] params, String orderBy) {
+		return getReadableDb().query(th.getTableName(), null, where, params, null, null, orderBy);
 	}
 
 	/**
@@ -252,7 +267,7 @@ public abstract class SQLiteDao<T> {
 	 * @return Cursor
 	 */
 	protected Cursor queryAll() {
-		return query(null, null);
+		return query(null, null, null);
 	}
 
 	/**
