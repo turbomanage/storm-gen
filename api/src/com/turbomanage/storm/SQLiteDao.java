@@ -29,7 +29,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.turbomanage.storm.api.DatabaseFactory;
 import com.turbomanage.storm.exception.TooManyResultsException;
-import com.turbomanage.storm.query.FilterBuilder;
+import com.turbomanage.storm.query.Query;
 
 /**
  * Base DAO class for entity DAOs. Most of the runtime is implemented
@@ -109,14 +109,14 @@ public abstract class SQLiteDao<T> {
 	}
 
 	/**
-	 * Returns a {@link FilterBuilder} for the entity type. The default
+	 * Returns a {@link Query} for the entity type. The default
 	 * FilterBuilder constructs a query by ANDing all conditions.
 	 *
 	 * @return FilterBuilder
 	 */
 	@SuppressWarnings("unchecked")
-	public FilterBuilder<T> filter() {
-		return new FilterBuilder<T>((SQLiteDao<T>) this);
+	public Query<T> load() {
+		return new Query<T>((SQLiteDao<T>) this);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public abstract class SQLiteDao<T> {
 	 * @return One entity
 	 */
 	public T get(Long id) {
-		return filter().eq(th.getIdCol(), id).get();
+		return load().eq(th.getIdCol(), id).get();
 	}
 
 	/**
@@ -165,7 +165,7 @@ public abstract class SQLiteDao<T> {
 	public List<T> listByExample(T exampleObj) {
 		return asList(queryByExample(exampleObj));
 	}
-
+	
 	/**
 	 * Inserts a row for the provided entity. If the entity's id is the
 	 * default long (0), the database generates an id and populates the
@@ -280,7 +280,7 @@ public abstract class SQLiteDao<T> {
 	 * @return Cursor
 	 */
 	protected Cursor queryByExample(T obj) {
-		return th.buildFilter(this.filter(), obj).exec();
+		return th.buildFilter(this.load(), obj).exec();
 	}
 
 	/**

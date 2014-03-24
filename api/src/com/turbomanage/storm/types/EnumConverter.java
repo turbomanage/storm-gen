@@ -16,14 +16,14 @@
 package com.turbomanage.storm.types;
 
 import com.turbomanage.storm.api.Converter;
-import com.turbomanage.storm.query.FilterBuilder;
+import com.turbomanage.storm.query.Query;
 import com.turbomanage.storm.types.TypeConverter.BindType;
 import com.turbomanage.storm.types.TypeConverter.SqlType;
 
 /**
  * The annotations in this converter are used to generate
  * inline enum conversion code in the TableHelper. The toSql() method
- * is used by {@link FilterBuilder}. Otherwise, the methods in this
+ * is used by {@link Query}. Otherwise, the methods in this
  * class are not actually used.
  *
  * @author David M. Chandler

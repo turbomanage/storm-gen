@@ -27,7 +27,7 @@ import android.util.Log;
 
 import com.turbomanage.storm.csv.CsvTableReader;
 import com.turbomanage.storm.csv.CsvTableWriter;
-import com.turbomanage.storm.query.FilterBuilder;
+import com.turbomanage.storm.query.Query;
 
 /**
  * Abstract base class for generated TableHelpers.
@@ -165,7 +165,7 @@ public abstract class TableHelper<T> {
 	 * @param exampleObj
 	 * @return FilterBuilder ready to execute
 	 */
-	public abstract FilterBuilder<T> buildFilter(FilterBuilder<T> builder, T exampleObj);
+	public abstract Query<T> buildFilter(Query<T> builder, T exampleObj);
 
 	/**
 	 * Creates the table that represents the associated entity.
