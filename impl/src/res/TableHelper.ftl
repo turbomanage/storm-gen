@@ -3,7 +3,7 @@ package ${daoPackage};
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.DatabaseUtils.InsertHelper;
-import com.turbomanage.storm.query.FilterBuilder;
+import com.turbomanage.storm.query.Query;
 import com.turbomanage.storm.TableHelper;
 import java.util.Map;
 import java.util.HashMap;
@@ -188,7 +188,7 @@ public class ${tableHelperName} extends TableHelper<${entityName}> {
 	}
 
 	@Override
-	public FilterBuilder buildFilter(FilterBuilder filter, ${entityName} obj) {
+	public Query buildFilter(Query filter, ${entityName} obj) {
 		${entityName} defaultObj = new ${entityName}();
 		// Include fields in query if they differ from the default object
 		<#list fields as field>

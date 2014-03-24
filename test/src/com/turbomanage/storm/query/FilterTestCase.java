@@ -78,14 +78,14 @@ public class FilterTestCase extends AndroidTestCase {
 		assertEquals("BLOBFIELD DESC", SimpleEntityTable.Columns.BLOBFIELD.desc());
 		SimpleEntityDao dao = new SimpleEntityDao(ctx);
 		try {
-			dao.filter().order();
+			dao.load().order();
 			fail("order() with no arguments should throw IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			// test passes
 		}
-		FilterBuilder<SimpleEntity> fb = dao.filter().order(Columns.BLOBFIELD.asc());
+		Query<SimpleEntity> fb = dao.load().order(Columns.BLOBFIELD.asc());
 		assertEquals("BLOBFIELD ASC", fb.orderBy);
-		fb = dao.filter().order(Columns.BLOBFIELD.asc(), Columns.DOUBLEFIELD.desc());
+		fb = dao.load().order(Columns.BLOBFIELD.asc(), Columns.DOUBLEFIELD.desc());
 		assertEquals("BLOBFIELD ASC, DOUBLEFIELD DESC", fb.orderBy);
 	}
 	
@@ -105,7 +105,7 @@ public class FilterTestCase extends AndroidTestCase {
 		valueDao.insert(val3);
 		valueDao.insert(val4);
 		valueDao.insert(val5);
-		List<ValueEntity> sortedValues = valueDao.filter().order(com.turbomanage.storm.entity.dao.ValueEntityTable.Columns.INTVALUE.desc()).list();
+		List<ValueEntity> sortedValues = valueDao.load().order(com.turbomanage.storm.entity.dao.ValueEntityTable.Columns.INTVALUE.desc()).list();
 		assertTrue(sortedValues.size() == 5);
 		int previous = sortedValues.get(0).getIntValue();
 		for (int i = 1; i < sortedValues.size(); i++) {
@@ -114,9 +114,16 @@ public class FilterTestCase extends AndroidTestCase {
 		}
 	}
 	
+	public void testFilterByExample() {
+		SimpleEntity exampleObj = new SimpleEntity();
+		exampleObj.setEnumField(ENUM_VALUE);
+		SimpleEntity result = dao.load().byExample(exampleObj).get();
+		assertEquals(ENUM_VALUE, result.getEnumField());
+	}
+	
 	public void testQueryByBlob() {
 		try {
-			dao.filter().eq(Columns.BLOBFIELD, BLOB_VALUE);
+			dao.load().eq(Columns.BLOBFIELD, BLOB_VALUE);
 			fail("Should throw IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			// pass
@@ -124,23 +131,23 @@ public class FilterTestCase extends AndroidTestCase {
 	}
 
 	public void testQueryByBoolean() {
-		SimpleEntity result = dao.filter().eq(Columns.BOOLEANFIELD, BOOLEAN_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.BOOLEANFIELD, BOOLEAN_VALUE).get();
 		assertEquals(BOOLEAN_VALUE, result.isBooleanField());
 	}
 
 	public void testQueryByByte() {
-		SimpleEntity result = dao.filter().eq(Columns.BYTEFIELD, BYTE_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.BYTEFIELD, BYTE_VALUE).get();
 		assertEquals(BYTE_VALUE, result.getByteField());
 	}
 
 	public void testQueryByChar() {
-		SimpleEntity result = dao.filter().eq(Columns.CHARFIELD, CHAR_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.CHARFIELD, CHAR_VALUE).get();
 		assertEquals(CHAR_VALUE, result.getCharField());
 	}
 
 	public void testQueryByDouble() {
 		try {
-			dao.filter().eq(Columns.DOUBLEFIELD, Math.PI);
+			dao.load().eq(Columns.DOUBLEFIELD, Math.PI);
 			fail("Should throw IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			// pass
@@ -148,13 +155,13 @@ public class FilterTestCase extends AndroidTestCase {
 	}
 
 	public void testQueryByEnum() {
-		SimpleEntity result = dao.filter().eq(Columns.ENUMFIELD, ENUM_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.ENUMFIELD, ENUM_VALUE).get();
 		assertEquals(ENUM_VALUE, result.getEnumField());
 	}
 
 	public void testQueryByFloat() {
 		try {
-			dao.filter().eq(Columns.FLOATFIELD, FLOAT_VALUE);
+			dao.load().eq(Columns.FLOATFIELD, FLOAT_VALUE);
 			fail("Should throw IllegalArgumentException");
 		} catch (IllegalArgumentException e) {
 			// pass
@@ -162,17 +169,17 @@ public class FilterTestCase extends AndroidTestCase {
 	}
 
 	public void testQueryByInt() {
-		SimpleEntity result = dao.filter().eq(Columns.INTFIELD, INT_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.INTFIELD, INT_VALUE).get();
 		assertEquals(INT_VALUE, result.getIntField());
 	}
 
 	public void testQueryByLong() {
-		SimpleEntity result = dao.filter().eq(Columns.LONGFIELD, LONG_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.LONGFIELD, LONG_VALUE).get();
 		assertEquals(LONG_VALUE, result.getLongField());
 	}
 
 	public void testQueryByShort() {
-		SimpleEntity result = dao.filter().eq(Columns.SHORTFIELD, (short) SHORT_VALUE).get();
+		SimpleEntity result = dao.load().eq(Columns.SHORTFIELD, (short) SHORT_VALUE).get();
 		assertEquals(SHORT_VALUE, result.getShortField());
 	}
 	

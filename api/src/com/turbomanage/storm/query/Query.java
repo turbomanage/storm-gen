@@ -37,9 +37,9 @@ import com.turbomanage.storm.types.ShortConverter;
  *
  * @param <T>
  */
-public class FilterBuilder<T> {
+public class Query<T> {
 
-	private static final String TAG = FilterBuilder.class.getName();
+	private static final String TAG = Query.class.getName();
 	private SQLiteDao<T> dao;
 	private List<Predicate> where = new ArrayList<Predicate>();
 	protected String orderBy;
@@ -50,66 +50,82 @@ public class FilterBuilder<T> {
 	 *
 	 * @param dao
 	 */
-	public FilterBuilder(SQLiteDao<T> dao) {
+	public Query(SQLiteDao<T> dao) {
 		this.dao = dao;
+	}
+
+	/**
+	 * Executes a query which returns all rows in the entity table
+	 * that match the fields of the example object having values other
+	 * than the defaults.
+	 *
+	 * Calling method MUST close the {@link Cursor}!
+	 *
+	 * @return Cursor
+	 */
+	public Query<T> byExample(T obj) {
+		if (obj != null) {
+			return dao.getTableHelper().buildFilter(this, obj);
+		}
+		return this;
 	}
 
 	/*
 	 * Convenience methods for comparing equality of each wrapper type
 	 */
 
-	public FilterBuilder<T> eq(Column colName, Boolean param) {
+	public Query<T> eq(Column colName, Boolean param) {
 		Integer sqlValue = BooleanConverter.GET.toSql(param);
 		where.add(new Equality(colName, BooleanConverter.GET.toString(sqlValue)));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, Byte param) {
+	public Query<T> eq(Column colName, Byte param) {
 		Short sqlValue = ByteConverter.GET.toSql(param);
 		where.add(new Equality(colName, ByteConverter.GET.toString(sqlValue)));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, byte[] param) {
+	public Query<T> eq(Column colName, byte[] param) {
 		throw new IllegalArgumentException("Exact match on type byte[] is not supported");
 	}
 
-	public FilterBuilder<T> eq(Column colName, Character param) {
+	public Query<T> eq(Column colName, Character param) {
 		Integer sqlValue = CharConverter.GET.toSql(param);
 		where.add(new Equality(colName, CharConverter.GET.toString(sqlValue)));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, Double param) {
+	public Query<T> eq(Column colName, Double param) {
 		throw new IllegalArgumentException("Exact match on type double is not supported");
 	}
 
-	public FilterBuilder<T> eq(Column colName, Enum param) {
+	public Query<T> eq(Column colName, Enum param) {
 		String sqlValue = EnumConverter.GET.toSql(param);
 		where.add(new Equality(colName, sqlValue));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, Float param) {
+	public Query<T> eq(Column colName, Float param) {
 		throw new IllegalArgumentException("Exact match on type float is not supported");
 	}
 
-	public FilterBuilder<T> eq(Column colName, Integer param) {
+	public Query<T> eq(Column colName, Integer param) {
 		where.add(new Equality(colName, IntegerConverter.GET.toString(param)));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, Long param) {
+	public Query<T> eq(Column colName, Long param) {
 		where.add(new Equality(colName, LongConverter.GET.toString(param)));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, Short param) {
+	public Query<T> eq(Column colName, Short param) {
 		where.add(new Equality(colName, ShortConverter.GET.toString(param)));
 		return this;
 	}
 
-	public FilterBuilder<T> eq(Column colName, String param) {
+	public Query<T> eq(Column colName, String param) {
 		where.add(new Equality(colName, param));
 		return this;
 	}
@@ -145,7 +161,7 @@ public class FilterBuilder<T> {
 		return dao.asList(this.exec());
 	}
 
-	public FilterBuilder order(String...columns) {
+	public Query order(String...columns) {
 		if (columns.length < 1) {
 			throw new IllegalArgumentException();
 		}
