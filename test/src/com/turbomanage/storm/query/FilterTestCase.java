@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.turbomanage.storm.query;
 
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
@@ -87,6 +88,13 @@ public class FilterTestCase extends AndroidTestCase {
 		assertEquals("BLOBFIELD ASC", fb.orderBy);
 		fb = dao.load().order(Columns.BLOBFIELD.asc(), Columns.DOUBLEFIELD.desc());
 		assertEquals("BLOBFIELD ASC, DOUBLEFIELD DESC", fb.orderBy);
+	}
+	
+	public void testBuildIn() {
+		// TODO check params
+		Query<SimpleEntity> q = dao.load().in(Columns.WSTRINGFIELD, "a", "b", "c");
+		assertEquals("WSTRINGFIELD IN (?,?,?)", q.where());
+		assertTrue(Arrays.equals(new String[]{"a", "b", "c"}, q.params()));
 	}
 	
 	public void testBuildWhere() {
