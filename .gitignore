@@ -1,1 +1,6 @@
 **/.settings/*
+.DS_Store
+.idea
+*.iml
+target
+build
