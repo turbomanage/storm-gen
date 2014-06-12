@@ -30,3 +30,14 @@ You can use the DAO like this:
     Person person = dao.get(id);
 
 For more info, see the [unit tests](https://github.com/turbomanage/storm-gen/tree/master/test/src/com/turbomanage/storm/test) and the resources on the project home page.
+### Integration ###
+The lib is available on Maven Central,you just need to add the following dependency to your build.gradle.
+
+```
+dependencies {
+        apt 'com.turbomanage.storm:storm-impl:0.98'
+        compile 'com.android.support:appcompat-v7:19.1.0'
+        compile 'com.android.support:support-v4:19.1.0'
+        compile 'com.turbomanage.storm:storm-api:0.98'
+}
+```
