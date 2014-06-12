@@ -31,13 +31,27 @@ You can use the DAO like this:
 
 For more info, see the [unit tests](https://github.com/turbomanage/storm-gen/tree/master/test/src/com/turbomanage/storm/test) and the resources on the project home page.
 ### Integration ###
-The lib is available on Maven Central,you just need to add the following dependency to your build.gradle.
+The lib is available on Maven Central. Add the android-apt plugin and stORM dependencies to build.gradle. Log4j and javax.persistence are needed if you use the JPA @Entity annotation instead of stORM's @Entity.
 
 ```
+apply plugin: 'android'
+apply plugin: 'android-apt'
+
+buildscript {
+    repositories {
+        mavenCentral()
+     }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.10.+'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
+    }
+}
+
 dependencies {
         apt 'com.turbomanage.storm:storm-impl:0.98'
         compile 'com.android.support:appcompat-v7:19.1.0'
-        compile 'com.android.support:support-v4:19.1.0'
+        compile 'log4j:log4j:1.2.17'
+        compile 'javax.persistence:persistence-api:1.0'
         compile 'com.turbomanage.storm:storm-api:0.98'
 }
 ```
