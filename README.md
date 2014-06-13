@@ -34,8 +34,7 @@ For more info, see the [unit tests](https://github.com/turbomanage/storm-gen/tre
 The lib is available on Maven Central. Add the android-apt plugin and stORM dependencies to build.gradle. Log4j and javax.persistence are needed if you use the JPA @Entity annotation instead of stORM's @Entity.
 
 ```
-apply plugin: 'android'
-apply plugin: 'android-apt'
+// top-level build.gradle
 
 buildscript {
     repositories {
@@ -46,6 +45,13 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.2'
     }
 }
+
+// app module build.gradle
+
+apply plugin: 'android'
+apply plugin: 'android-apt'
+
+...
 
 dependencies {
         apt 'com.turbomanage.storm:storm-impl:0.98'
