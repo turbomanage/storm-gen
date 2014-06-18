@@ -109,7 +109,7 @@ public class CsvTableReader {
 			while (csvRow != null) {
 //				Log.d(CsvTableReader.class.getName(), "Row " + numInserts + ": " + csvRow);
 				long rowId = parseAndInsertRow(csvRow);
-				if (rowId < 0) {
+				if (rowId == -1L) {
 					throw new RuntimeException("Error after row " + numInserts);
 				}
 				numInserts++;
