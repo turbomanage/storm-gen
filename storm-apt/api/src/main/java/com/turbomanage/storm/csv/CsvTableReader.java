@@ -104,7 +104,7 @@ public class CsvTableReader {
 			String csvRow = reader.readLine();
 			while (csvRow != null) {
 				long rowId = parseAndInsertRow(csvRow);
-				if (rowId == -1) {
+				if (rowId == -1L) {
 					throw new RuntimeException("Error after row " + numInserts);
 				}
 				numInserts++;
