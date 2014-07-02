@@ -28,7 +28,7 @@ public class TestDatabaseHelper extends DatabaseHelper {
 	}
 
 	public static final String DB_NAME = "testDb";
-	public static final int DB_VERSION = 2;
+	public static final int DB_VERSION = 1;
 
 	@Override
 	public UpgradeStrategy getUpgradeStrategy() {

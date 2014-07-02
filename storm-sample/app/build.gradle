@@ -22,10 +22,10 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    apt 'com.turbomanage.storm:storm-impl:0.98'
+    apt 'com.turbomanage.storm:storm-impl:0.99'
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.android.support:support-v4:19.1.0'
-    compile 'com.turbomanage.storm:storm-api:0.98'
+    compile 'com.turbomanage.storm:storm-api:0.99'
     compile 'de.timroes.android:EnhancedListView:0.3.2@aar'
     compile 'com.nineoldandroids:library:2.4.0'
 }

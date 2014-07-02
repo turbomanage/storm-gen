@@ -13,7 +13,7 @@
     <groupId>com.turbomanage.storm</groupId>
     <artifactId>storm-gen</artifactId>
     <packaging>pom</packaging>
-    <version>0.98</version>
+    <version>0.99</version>
     <modules>
         <module>api</module>
         <module>impl</module>

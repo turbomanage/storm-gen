@@ -41,8 +41,6 @@ public class CsvTableReader {
 
 	@SuppressWarnings("rawtypes")
 	protected TableHelper th;
-	private int[] colMap;
-	private String[] defaultValues;
 	private InsertHelper insertHelper;
 
 	/**
@@ -103,13 +101,10 @@ public class CsvTableReader {
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader reader = new BufferedReader(isr);
 			String headerRow = reader.readLine();
-			colMap = parseCsvHeader(headerRow);
-			defaultValues = th.getDefaultValues();
 			String csvRow = reader.readLine();
 			while (csvRow != null) {
-//				Log.d(CsvTableReader.class.getName(), "Row " + numInserts + ": " + csvRow);
 				long rowId = parseAndInsertRow(csvRow);
-				if (rowId < 0) {
+				if (rowId == -1) {
 					throw new RuntimeException("Error after row " + numInserts);
 				}
 				numInserts++;
@@ -127,47 +122,6 @@ public class CsvTableReader {
 	}
 
 	/**
-	 * Populate an array containing the value for each column
-	 * from a CSV row where the columns may be in different order.
-	 *
-	 * @param textValues One row from the CSV file
-	 * @return
-	 */
-	private String[] mapValuesToTable(List<String> textValues) {
-		// TODO Eliminate this method since CsvWriter now orders?
-		String[] rowValues = defaultValues.clone();
-		for (int i=0; i < rowValues.length; i++) {
-			int csvPos = colMap[i];
-			if (csvPos >= 0 ) {
-				rowValues[i] = textValues.get(colMap[i]);
-			}
-		}
-		return rowValues;
-	}
-
-	/**
-	 * Map each column in the CSV to a column in the table.
-	 * Assumes that {@link TableHelper#getColumns()} are the same
-	 * order as {@link InsertHelper#getColumnIndex(String)}.
-	 *
-	 * @param headerRow
-	 * @return An array containing the CSV col # for each table column
-	 *         or -1 for missing columns
-	 */
-	private int[] parseCsvHeader(String headerRow) {
-		List<String> csvCols = Arrays.asList(headerRow.split(","));
-		int numCols = th.getColumns().length;
-		colMap = new int[numCols];
-		// Iterate over table columns and assign index of each csv column
-		for (int i = 0; i < numCols; i++) {
-			String colName = th.getColumns()[i].toString();
-			int csvPos = csvCols.indexOf(colName);
-			colMap[i] = csvPos;
-		}
-		return colMap;
-	}
-
-	/**
 	 * Parse the values in a CSV row, map them to the table column
 	 * order, and insert. Uses {@link InsertHelper} so it may be
 	 * called repeatedly within a transaction for max performance.
@@ -178,7 +132,7 @@ public class CsvTableReader {
 	private long parseAndInsertRow(String csvRow) {
 		List<String> textValues = CsvUtils.getValues(csvRow);
 		insertHelper.prepareForInsert();
-		String[] rowValues = mapValuesToTable(textValues);
+        String[] rowValues = textValues.toArray(new String[textValues.size()]);
 		th.bindRowValues(insertHelper, rowValues);
 		return insertHelper.execute();
 	}

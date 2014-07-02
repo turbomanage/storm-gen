@@ -56,6 +56,7 @@ public class CsvTableWriter extends CsvTableReader {
 	private String buildHeaderRow() {
 		// Write column names in first row
 		StringBuilder sb = new StringBuilder();
+        // TODO write old #, name, type from saved schema
 		Column[] cols = th.getColumns();
 		for (Column col : cols) {
 			sb.append(',');

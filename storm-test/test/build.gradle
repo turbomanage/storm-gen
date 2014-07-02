@@ -24,6 +24,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'log4j:log4j:1.2.17'
     compile 'javax.persistence:persistence-api:1.0'
-    compile 'com.turbomanage.storm:storm-api:0.98'
-    apt 'com.turbomanage.storm:storm-impl:0.98'
+    compile 'com.turbomanage.storm:storm-api:0.99'
+    apt 'com.turbomanage.storm:storm-impl:0.99'
 }

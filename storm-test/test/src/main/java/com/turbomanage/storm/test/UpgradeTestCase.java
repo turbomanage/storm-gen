@@ -34,6 +34,7 @@ import android.test.AndroidTestCase;
 import com.turbomanage.storm.DatabaseHelper;
 import com.turbomanage.storm.TestDatabaseHelper;
 import com.turbomanage.storm.TestDbFactory;
+import com.turbomanage.storm.converter.Latitude;
 import com.turbomanage.storm.csv.CsvTableReader;
 import com.turbomanage.storm.entity.SimpleEntity;
 import com.turbomanage.storm.entity.SimpleEntity.EnumType;
@@ -119,20 +120,20 @@ public class UpgradeTestCase extends AndroidTestCase {
 		dao.insert(new SimpleEntity()); // default
 		String timestamp = "." + System.currentTimeMillis();
 		dbHelper.backupAllTablesToCsv(ctx, db, timestamp);
-		FileInputStream ois = ctx.openFileInput("testDb.v2.SimpleEntity" + timestamp);
+		FileInputStream ois = ctx.openFileInput("testDb.v1.SimpleEntity" + timestamp);
 		InputStreamReader isr = new InputStreamReader(ois);
 		BufferedReader reader = new BufferedReader(isr);
 		reader.readLine(); // header row
 		String row1 = reader.readLine();
-		String expected = "Q0FGRUJBQkU=,1,0,122,3ff9e3779b97f4a8,VALUE1,1.618034,1,75025,12586269025,0,28657,1,89,88,18000000,-401c3910c8d016b0,-0.618034,1836311903,,86267571272,17711,\"Hello, world!\"";
+		String expected = "0,1,1,0,Q0FGRUJBQkU=,122,28657,75025,12586269025,1.618034,3ff9e3779b97f4a8,1,89,88,18000000,VALUE1,17711,1836311903,86267571272,-0.618034,-401c3910c8d016b0,\"Hello, world!\",-3fcf9bb7952d234f";
 		assertEquals(expected, row1);
 		String row2 = reader.readLine();
-		expected = ",0,0,0,0,,0.0,2,0,0,0,0,,,,,,,,,,,";
+		expected = "0,2,0,0,,0,0,0,0,0.0,0,,,,,,,,,,,,";
 		assertEquals(expected, row2);
 	}
 
 	/**
-	 * Read in a CSV file from the prior db version with columns added and dropped.
+	 * Read in a CSV file from the prior db version with 2 columns added and 1 dropped.
 	 * Ensure that the unchanged columns are matched by name and that new columns
 	 * have the expected default values.
 	 */
@@ -146,7 +147,8 @@ public class UpgradeTestCase extends AndroidTestCase {
 		assertEquals(2, listAll.size());
 		SimpleEntity testEntity = newTestEntity();
 		testEntity.setId(1);
-		testEntity.setCharField((char) 0); // Expected default value
+		testEntity.setCharField((char) 0); // Expected default value for new col
+        testEntity.setwStringField(null); // Expected default value for new col
 		DaoTestCase.assertAllFieldsMatch(testEntity,listAll.get(0));
 		SimpleEntity newEntity = new SimpleEntity();
 		newEntity.setId(2);
@@ -187,6 +189,7 @@ public class UpgradeTestCase extends AndroidTestCase {
 		e.setwLongField(86267571272L);
 		e.setwShortField((short) 17711);
 		e.setwStringField("Hello, world!");
+        e.setwLatitudeField(new Latitude(-16.39173));
 		return e;
 	}
 
