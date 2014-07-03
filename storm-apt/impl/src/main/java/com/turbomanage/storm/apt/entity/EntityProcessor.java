@@ -111,6 +111,10 @@ public class EntityProcessor extends ClassProcessor {
 	protected void inspectField(VariableElement field) {
 		Set<Modifier> modifiers = field.getModifiers();
 		boolean hasId = (field.getAnnotation(Id.class) != null);
+        String fieldName = field.getSimpleName().toString();
+        if (!SqlUtil.isValidIdentifier(field.getSimpleName().toString())) {
+            abort(fieldName + " is not a valid SQL column name.");
+        }
 		if (!modifiers.contains(Modifier.TRANSIENT) && !modifiers.contains(Modifier.STATIC)) {
 			String javaType = getFieldType(field);
 			if (TypeKind.DECLARED.equals(field.asType().getKind())) {
