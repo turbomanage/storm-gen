@@ -24,6 +24,8 @@ import com.turbomanage.storm.converter.Latitude;
 @Entity
 public class SimpleEntity {
 
+    public static String CONSTANT = "constant";
+
 	public enum EnumType {VALUE1, VALUE2};
 
 	private int privateField;

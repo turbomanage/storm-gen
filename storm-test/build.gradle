@@ -14,9 +14,9 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        // staging only
+//        staging only
 //        maven {
-//            url "https://oss.sonatype.org/content/repositories/comturbomanage-1000"
+//            url "https://oss.sonatype.org/content/repositories/comturbomanage-1001"
 //        }
     }
 }

@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import com.turbomanage.storm.DatabaseHelper;
+import com.turbomanage.storm.TableHelper;
 import com.turbomanage.storm.TestDatabaseHelper;
 import com.turbomanage.storm.TestDbFactory;
 import com.turbomanage.storm.entity.SimpleEntity;
@@ -157,6 +158,12 @@ public class DaoTestCase extends AndroidTestCase {
 		List<SimpleEntity> resultList = dao.listByExample(exampleObj);
 		assertEquals(2, resultList.size());
 	}
+
+    public void testNoStaticFields() {
+        for (TableHelper.Column col : dao.getTableHelper().getColumns()) {
+            assertFalse(SimpleEntity.CONSTANT.toString().equals(col.toString()));
+        };
+    }
 
 	static void assertAllFieldsMatch(SimpleEntity a, SimpleEntity b) {
 		assertEquals(a.getId(), b.getId());

@@ -111,7 +111,7 @@ public class EntityProcessor extends ClassProcessor {
 	protected void inspectField(VariableElement field) {
 		Set<Modifier> modifiers = field.getModifiers();
 		boolean hasId = (field.getAnnotation(Id.class) != null);
-		if (!modifiers.contains(Modifier.TRANSIENT)) {
+		if (!modifiers.contains(Modifier.TRANSIENT) && !modifiers.contains(Modifier.STATIC)) {
 			String javaType = getFieldType(field);
 			if (TypeKind.DECLARED.equals(field.asType().getKind())) {
 				DeclaredType type = (DeclaredType) field.asType();
