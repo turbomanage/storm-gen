@@ -1,5 +1,7 @@
 **/.navigation
 **/.settings/*
+**/.classpath
+**/.project
 .DS_Store
 .idea
 *.iml
