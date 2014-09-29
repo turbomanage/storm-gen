@@ -70,12 +70,6 @@
     <profiles>
         <profile>
             <id>nomaven</id>
-            <!--<activation>-->
-                <!--<property>-->
-                    <!--<name>performRelease</name>-->
-                    <!--<value>true</value>-->
-                <!--</property>-->
-            <!--</activation>-->
             <build>
                 <plugins>
                     <plugin>
