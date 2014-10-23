@@ -41,7 +41,8 @@ public class Query<T> {
 
 	private static final String TAG = Query.class.getName();
 	private SQLiteDao<T> dao;
-	private List<Predicate> where = new ArrayList<Predicate>();
+	private StringBuilder where = new StringBuilder();
+	protected List<String> params = new ArrayList<String>();
 	protected String orderBy;
 
 	/**
@@ -76,13 +77,15 @@ public class Query<T> {
 
 	public Query<T> eq(Column colName, Boolean param) {
 		Integer sqlValue = BooleanConverter.GET.toSql(param);
-		where.add(new Equality(colName, BooleanConverter.GET.toString(sqlValue)));
+		where.append(" AND " + colName + "=?");
+		params.add(BooleanConverter.GET.toString(sqlValue));
 		return this;
 	}
 
 	public Query<T> eq(Column colName, Byte param) {
 		Short sqlValue = ByteConverter.GET.toSql(param);
-		where.add(new Equality(colName, ByteConverter.GET.toString(sqlValue)));
+		where.append(" AND " + colName + "=?");
+		params.add(ByteConverter.GET.toString(sqlValue));
 		return this;
 	}
 
@@ -92,7 +95,8 @@ public class Query<T> {
 
 	public Query<T> eq(Column colName, Character param) {
 		Integer sqlValue = CharConverter.GET.toSql(param);
-		where.add(new Equality(colName, CharConverter.GET.toString(sqlValue)));
+		where.append(" AND " + colName + "=?");
+		params.add(CharConverter.GET.toString(sqlValue));
 		return this;
 	}
 
@@ -102,7 +106,8 @@ public class Query<T> {
 
 	public Query<T> eq(Column colName, Enum param) {
 		String sqlValue = EnumConverter.GET.toSql(param);
-		where.add(new Equality(colName, sqlValue));
+		where.append(" AND " + colName + "=?");
+		params.add(sqlValue);
 		return this;
 	}
 
@@ -111,22 +116,26 @@ public class Query<T> {
 	}
 
 	public Query<T> eq(Column colName, Integer param) {
-		where.add(new Equality(colName, IntegerConverter.GET.toString(param)));
+		where.append(" AND " + colName + "=?");
+		params.add(IntegerConverter.GET.toString(param));
 		return this;
 	}
 
 	public Query<T> eq(Column colName, Long param) {
-		where.add(new Equality(colName, LongConverter.GET.toString(param)));
+		where.append(" AND " + colName + "=?");
+		params.add(LongConverter.GET.toString(param));
 		return this;
 	}
 
 	public Query<T> eq(Column colName, Short param) {
-		where.add(new Equality(colName, ShortConverter.GET.toString(param)));
+		where.append(" AND " + colName + "=?");
+		params.add(ShortConverter.GET.toString(param));
 		return this;
 	}
 
 	public Query<T> eq(Column colName, String param) {
-		where.add(new Equality(colName, param));
+		where.append(" AND " + colName + "=?");
+		params.add(param);
 		return this;
 	}
 
@@ -151,8 +160,23 @@ public class Query<T> {
 		return dao.asObject(this.exec());
 	}
 
+	public Query<T> in(Column colName, String... values) {
+		// WHERE colName IN (?,?,?)
+		if (values.length > 0) {
+			String valueList = "(?";
+			params.add(values[0]);
+			for (int i = 1; i < values.length; i++) {
+				valueList += ",?";
+				params.add(values[i]);
+			}
+			valueList += ")";
+			where.append(" AND " + colName + " IN " + valueList);
+		}
+		return this;
+	}
+
 	/**
-	 * Executes the query and returns the result as a {@link List}.
+	 * Executes the query and returns the result as a {@link java.util.List}.
 	 *
 	 * @see SQLiteDao#asList(Cursor)
 	 * @return A List of matching entities or null
@@ -161,7 +185,7 @@ public class Query<T> {
 		return dao.asList(this.exec());
 	}
 
-	public Query order(String...columns) {
+	public Query<T> order(String...columns) {
 		if (columns.length < 1) {
 			throw new IllegalArgumentException();
 		}
@@ -180,13 +204,8 @@ public class Query<T> {
 	 *
 	 * @return String[] parameters
 	 */
-	private String[] params() {
-		String[] params = new String[this.where.size()];
-		for (int i = 0; i < params.length; i++) {
-			Predicate p = this.where.get(i);
-			params[i] = p.getParam();
-		}
-		return params;
+	String[] params() {
+		return params.toArray(new String[params.size()]);
 	}
 
 	/**
@@ -195,16 +214,11 @@ public class Query<T> {
 	 *
 	 * @return String SQL WHERE clause
 	 */
-	private String where() {
-		if (where.size() < 1) {
-			return null;
+	String where() {
+		if (where.length() > 0) {
+			return where.substring(5).toString();
 		}
-		StringBuilder sqlWhere = new StringBuilder();
-		for (Predicate p : where) {
-			sqlWhere.append(" AND ");
-			sqlWhere.append(p.getSqlOp() + "?");
-		}
-		return sqlWhere.toString().substring(5);
+		return null;
 	}
 
 }
