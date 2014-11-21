@@ -214,6 +214,10 @@ public abstract class SQLiteDao<T> {
 		return numInserted;
 	}
 
+	public long save(T obj) {
+		// TODO if 0, insert, else update
+	}
+
 	/**
 	 * Update all columns for the row having the ID matching
 	 * the provided entity's ID.
