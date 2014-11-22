@@ -165,6 +165,15 @@ public class DaoTestCase extends AndroidTestCase {
         };
     }
 
+	public void testSave() {
+		SimpleEntity newEntity = new SimpleEntity();
+		long id = dao.save(newEntity);
+		assertTrue(id > 0);
+		newEntity.setwStringField("nada");
+		assertTrue(dao.save(newEntity) == 0);
+		// TODO add test case for invalid save
+	}
+
 	static void assertAllFieldsMatch(SimpleEntity a, SimpleEntity b) {
 		assertEquals(a.getId(), b.getId());
 		assertEquals(a.getByteField(), b.getByteField());
