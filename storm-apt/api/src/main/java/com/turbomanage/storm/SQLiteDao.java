@@ -215,6 +215,23 @@ public abstract class SQLiteDao<T> {
 	}
 
 	/**
+	 * Insert or update.
+	 *
+	 * @param obj An entity
+	 * @return 0 if updated, -1 if err, else new ID
+	 */
+	public long save(T obj) {
+		if (th.getId(obj) == 0) {
+			return insert(obj);
+		}
+		long updated = update(obj);
+		if (updated == 1) {
+			return 0;
+		}
+		return -1;
+	}
+
+	/**
 	 * Update all columns for the row having the ID matching
 	 * the provided entity's ID.
 	 *
