@@ -19,7 +19,11 @@ public class SqlUtil {
 	}
 
 	private static boolean isReservedWord(String id) {
-		return reservedWords.contains(id.toUpperCase());
+		String[] words = reservedWords.split(",");
+		for (String word : words){
+			if(word.equals(id.toUpperCase())) return true;
+		}
+		return false;
 	}
 
 	public static boolean isValidJavaIdentifier(String id) {
