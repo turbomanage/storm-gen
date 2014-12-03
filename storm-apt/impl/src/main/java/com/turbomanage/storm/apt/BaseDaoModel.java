@@ -11,13 +11,12 @@ import javax.lang.model.type.TypeMirror;
 public class BaseDaoModel extends ClassModel {
 
     /**
-     * Base Dao Class is received from the Annotation as TypeMirror
+     * Base Dao Class is received from the Annotation as complete class name, like java.lang.String
      *
-     * @param typeMirror
+     * @param qualifiedName
      */
-    public BaseDaoModel(TypeMirror typeMirror) {
+    public BaseDaoModel(String qualifiedName) {
 
-        String qualifiedName = typeMirror.toString();
         setClassName(qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1));
         setPackageName(qualifiedName.substring(0, qualifiedName.lastIndexOf(".")));
     }

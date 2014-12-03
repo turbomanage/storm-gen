@@ -185,10 +185,12 @@ public class EntityProcessor extends ClassProcessor {
      * see http://stackoverflow.com/questions/7687829/java-6-annotation-processing-getting-a-class-from-an-annotation
      */
     private static TypeMirror getBaseDaoTypeMirror(Entity entity) {
-        try {
-            entity.baseDaoClass();
-        } catch (MirroredTypeException mte) {
-            return mte.getTypeMirror();
+        if(entity != null) {
+            try {
+                entity.baseDaoClass();
+            } catch (MirroredTypeException mte) {
+                return mte.getTypeMirror();
+            }
         }
         return null;
     }
@@ -199,7 +201,9 @@ public class EntityProcessor extends ClassProcessor {
      * @return BaseDaoModel containing the package name + Class name
      */
     private static BaseDaoModel getBaseDaoClass(Entity entity) {
+        String qualifiedName = SQLiteDao.class.getName();
         TypeMirror typeMirror = getBaseDaoTypeMirror(entity);
-        return new BaseDaoModel(typeMirror);
+        if(typeMirror != null) qualifiedName = typeMirror.toString();
+        return new BaseDaoModel(qualifiedName);
     }
 }
