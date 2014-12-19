@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.turbomanage.storm.api;
 
+import com.turbomanage.storm.SQLiteDao;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,5 +35,5 @@ public @interface Entity {
 
 	String dbName() default "";
 	String name() default "";
-
+	Class<? extends SQLiteDao> baseDaoClass() default SQLiteDao.class;
 }

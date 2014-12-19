@@ -17,6 +17,7 @@ package com.turbomanage.storm.apt.entity;
 
 import com.turbomanage.storm.SQLiteDao;
 import com.turbomanage.storm.api.Entity;
+import com.turbomanage.storm.apt.BaseDaoModel;
 import com.turbomanage.storm.apt.ClassModel;
 import com.turbomanage.storm.apt.database.DatabaseModel;
 
@@ -26,7 +27,7 @@ public class EntityModel extends ClassModel {
 	private static final String TABLE_SUFFIX = "Table";
 	static final String DEFAULT_ID_FIELD = "id";
 	static final String ID_COL = "_id";
-	private Class<SQLiteDao> baseDaoClass;
+	private BaseDaoModel baseDaoClass;
 	private DatabaseModel dbModel;
 	private String dbName;
 	private String tableName;
@@ -62,17 +63,17 @@ public class EntityModel extends ClassModel {
 	 * @return String Simple name of the base DAO
 	 */
 	public String getBaseDaoName() {
-		return this.baseDaoClass.getSimpleName();
+		return this.baseDaoClass.getClassName();
 	}
 
-	protected Class<SQLiteDao> getBaseDaoClass() {
+	protected BaseDaoModel getBaseDaoClass() {
 		return baseDaoClass;
 	}
 
-	protected void setBaseDaoClass(Class<SQLiteDao> daoClass) {
+	protected void setBaseDaoClass(BaseDaoModel daoClass) {
 		this.baseDaoClass = daoClass;
 		// add corresponding import
-		this.addImport(daoClass.getCanonicalName());
+		this.addImport(daoClass.getQualifiedClassName());
 	}
 
 	void setDatabase(DatabaseModel dbModel) {
