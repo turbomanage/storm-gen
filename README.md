@@ -63,6 +63,39 @@ You can use the DAO like this:
 
 For more info, see the [unit tests](https://github.com/turbomanage/storm-gen/tree/master/test/src/com/turbomanage/storm/test) and the resources on the project home page.
 
+### Advanced features ###
+
+#### BaseDaoClass ####
+
+All your storm-generated Dao classes extend by default the abstract class SQliteDao:
+
+    public class SimpleEntityDao extends SQLiteDao<SimpleEntity>{ ... }
+
+If you would like to add some extra methods you can create a class that extends SQliteDao to be used instead:
+
+    public abstract class ExtendingSQLiteDao<T> extends SQLiteDao<T> {
+       public ExtendingSQLDao(Context ctx) {
+          super(ctx);
+       }
+       // we are adding a count method to all entities that will use this Base Dao Class
+       public int count(){
+          Cursor cursor = query(null, null);
+          int count = cursor.getCount();
+          cursor.close();
+          return count;
+       }
+    }
+
+Then use the attribute baseDaoClass of the @Entity annotation:
+
+    @Entity(baseDaoClass = ExtendingSQLiteDao.class)
+    public class SimpleEntity { ... }
+    
+You can then see that your Base Dao Class is now used:
+
+    public class SimpleEntityDao extends ExtendingSQLiteDao<SimpleEntity>{ ... }
+
+
 ### Troubleshooting ###
 In Eclipse / ADT, generated classes are saved in the .apt_generated folder. To see this folder in Eclipse, go to the view pane settings | Filters..., and uncheck .* resources.
 
