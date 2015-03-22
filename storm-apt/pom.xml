@@ -43,7 +43,15 @@
         <connection>scm:git:git@github.com:turbomanage/storm-gen.git</connection>
         <developerConnection>scm:git:git@github.com:turbomanage/storm-gen.git</developerConnection>
         <url>git@github.com:turbomanage/storm-gen.git</url>
+
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray</id>
+            <url>https://api.bintray.com/maven/galex/maven/com.turbomanage.storm</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -80,6 +88,16 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+
         </plugins>
 
         <pluginManagement>
@@ -106,6 +124,7 @@
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.5</version>
                 </plugin>
+
             </plugins>
         </pluginManagement>
     </build>
@@ -145,7 +164,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
+                    <!-- plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <executions>
@@ -157,7 +176,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin -->
                 </plugins>
             </build>
         </profile>
