@@ -15,6 +15,17 @@
  ******************************************************************************/
 package com.turbomanage.storm.apt.entity;
 
+import com.turbomanage.storm.SQLiteDao;
+import com.turbomanage.storm.api.Entity;
+import com.turbomanage.storm.api.Id;
+import com.turbomanage.storm.apt.BaseDaoModel;
+import com.turbomanage.storm.apt.ClassProcessor;
+import com.turbomanage.storm.apt.SqlUtil;
+import com.turbomanage.storm.apt.StormEnvironment;
+import com.turbomanage.storm.apt.converter.ConverterModel;
+import com.turbomanage.storm.apt.database.DatabaseModel;
+import com.turbomanage.storm.exception.TypeNotSupportedException;
+
 import java.util.List;
 import java.util.Set;
 
@@ -27,17 +38,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-
-import com.turbomanage.storm.SQLiteDao;
-import com.turbomanage.storm.api.Entity;
-import com.turbomanage.storm.api.Id;
-import com.turbomanage.storm.apt.BaseDaoModel;
-import com.turbomanage.storm.apt.ClassProcessor;
-import com.turbomanage.storm.apt.SqlUtil;
-import com.turbomanage.storm.apt.StormEnvironment;
-import com.turbomanage.storm.apt.converter.ConverterModel;
-import com.turbomanage.storm.apt.database.DatabaseModel;
-import com.turbomanage.storm.exception.TypeNotSupportedException;
+import javax.persistence.Transient;
 
 public class EntityProcessor extends ClassProcessor {
 
@@ -116,7 +117,7 @@ public class EntityProcessor extends ClassProcessor {
         if (!SqlUtil.isValidIdentifier(field.getSimpleName().toString())) {
             abort(fieldName + " is not a valid SQL column name.");
         }
-        if (!modifiers.contains(Modifier.TRANSIENT) && !modifiers.contains(Modifier.STATIC)) {
+        if (!modifiers.contains(Modifier.TRANSIENT) && field.getAnnotation(Transient.class) == null && !modifiers.contains(Modifier.STATIC)) {
             String javaType = getFieldType(field);
             if (TypeKind.DECLARED.equals(field.asType().getKind())) {
                 DeclaredType type = (DeclaredType) field.asType();
